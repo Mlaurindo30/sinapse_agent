@@ -25,7 +25,7 @@ project: sinapse-agent
 - AGENTS.md reescrito como guia cross-agent principal
 - CLAUDE.md mantido para Claude Code com customizações da nossa stack
 - GEMINI.md, .codex/, .gemini/ adicionados para suporte multi-agente
-- Sinapse-memory plugin v2 atualizado com novos paths
+- Sinapse-memory plugin atualizado com novos paths
 - Graphify reindexado: 1266 nodes (era 214)
 - Backup do vault antigo: `cerebro.backup.20260522-1737/`
 
