@@ -514,3 +514,144 @@ O sinapse-memory.py (plugin de 984 linhas) é o backend unificado. O sinapse-mcp
 ## Aprendizado via API (2026-05-24)
 
 Novo padrão identificado no fluxo de testes de integração da API REST.
+
+
+---
+
+## temporal: Graphify reindex executado. graph.json atualizado: 547 nodes, 707 edges (links), (2026-05-25)
+
+Graphify reindex executado. graph.json atualizado: 547 nodes, 707 edges (links), 44 communities. LLM: deepseek, 36 cache hit, 55 re-extraídos. Custo: ~$0.014. Output em graphify/graphify-out/graph.json (382 KB).
+
+
+---
+
+## temporal: Reindex Graphify do vault Sinapse executado via cron. Resultado: 494 nodes, 630  (2026-05-25)
+
+Reindex Graphify do vault Sinapse executado via cron. Resultado: 494 nodes, 630 edges, 38 comunidades (Leiden clustering). Tipos de nodes: 408 code, 53 concept, 29 document, 4 rationale. Custo: ~$0.0258 via DeepSeek. Graph movido para graphify/graphify-out/ com symlinks de retrocompatibilidade em cerebro/graphify-out/. Todos os backends saudáveis.
+
+
+---
+
+## temporal: Graphify reindex executado com sucesso. Vault Obsidian indexado com backend deep (2026-05-26)
+
+Graphify reindex executado com sucesso. Vault Obsidian indexado com backend deepseek. Resultado: 567 nodes, 699 links/edges, 58 comunidades. graph.json atualizado (389.5K) em graphify/graphify-out/. Cache semântico: 91 hit, 0 miss. 32 nodes deduplicados (9 exact, 22 fuzzy).
+
+
+---
+
+## sqlite-vec como substituto do Chroma (2026-05-30)
+
+sqlite-vec worker substitui Chroma no claude-mem para busca semântica. Usa sqlite-vec (extensão nativa SQLite) + fastembed (all-MiniLM-L6-v2, 384 dims). Zero dependência de Python MCP/uvx. Worker standalone em :37701, systemd user service (sinapse-sqlite-vec.service). Backfill automático na primeira query. Priority backend no plugin sinapse-memory (mais leve e rápido que Chroma).
+
+
+---
+
+## Análise Fria: Manus Agent — 3 fases de adoção (2026-05-30)
+
+Análise Fria do Manus Agent concluída. Veredito: adotar parcialmente. 3 fases de adoção recomendadas: (1) Event stream tipado no plugin sinapse-memory, (2) Planner com pseudocódigo + reflexão estendendo o todo, (3) Knowledge module condicional com scope por skill. Ignorar sandbox, deploy público, Data API Python, message_ask_user síncrono. PDF salvo em reference/analises/.
+
+
+---
+
+## Cebolinha voice clone provider (2026-05-30)
+
+Michel aprovou a voz do Cebolinha clonada via Qwen3-TTS Base. O ref_text precisa ser EXATAMENTE o que foi falado no áudio, incluindo os erros propositais (Cebolinha troca R por L). Parâmetros que funcionaram: temperature=1.0, top_k=50, top_p=1.0, language=portuguese. Provider registrado como 'cebolinha' no Hermes.
+
+
+---
+
+## Go build tags pattern for TTS registry + filepath.ExpandUser fix + CacheKey on Result (2026-06-01)
+
+Go build tags: registry.go + registry_audio.go + registry_stub.go precisam seguir o padrão: struct Registry declarado SEMPRE (sem build tag), métodos declarados por arquivo condicional (//go:build audio / //go:build !audio). Build tags não podem ter overlap de declarações. filepath.ExpandUser NÃO existe em Go — usar os.UserHomeDir() + filepath.Join. Result.CacheKey deve existir na struct se providers a usam.
+
+
+---
+
+## L1+L2 cache pattern para providers com synthesis caro (2026-06-02)
+
+## L1+L2 cache pattern (2026-06-01)
+
+TTS providers Kokoro e Qwen3 wired com cache de dois tiers:
+- L1: in-memory LRUCache (bounded, volátil, ~50ns hit)
+- L2: DiskCache JSON+sidecar (persistente, ~200μs hit)
+
+Pattern transferível: qualquer provider cuja síntese é cara
+(>100ms) e que pode ser chamada repetidamente com mesmos inputs
+beneficia desta arquitetura. O L1 hit serve requests recentes, o
+L2 hit serve restarts.
+
+Critical implementation detail: **modtime alignment via os.Chtimes**
+no Put. Sem isso, `Has()` (cheque Stat().ModTime()) e `Get()` (cheque
+entry.CachedAt) podem divergir em alguns segundos pela precisão do
+FS, causando testes flaky em Windows e comportamento inconsistente
+em produção.
+
+## Opt-in via settings (default off)
+
+DiskCache sempre opt-in via setting. Razão: o L2 consome disco,
+não deve ser surpresa para operadores. Settings shape:
+`{disk_cache_enabled, disk_cache_dir, disk_cache_ttl}`. Failures
+de init do L2 degradam silenciosamente para L1-only — cache miss
+não vira erro.
+
+## Quando NÃO usar este pattern
+
+- Síntese barata (<50ms): overhead do L2 é pior que repetir
+- Request único por key (no repetition possible): L1+L2 só desperdiça memória/disco
+- Dados confidenciais (PII): cache em disco pode violar compliance. Usar L1 only ou L2 com encryption-at-rest (não implementado)
+
+
+
+---
+
+## Thoth TTS/Voice: prefer shell-out ffmpeg no runtime Go, não wrapper Python externo (2026-06-02)
+
+Quando o runtime alvo é Go (Thoth), não depender de wrappers Python externos para transcoding de mídia, mesmo que o Hermes já tenha função equivalente (_convert_to_opus).
+
+Padrão recomendado:
+1) Runtime Go chama ffmpeg via exec.CommandContext (timeout + stderr trimming)
+2) Define erro explícito para ausência de binário (ErrFFmpegUnavailable)
+3) Adapter de canal usa best-effort + soft-fail: tenta transcode, em erro mantém fluxo legado
+4) Cache de transcode por hash(input+opts)+TTL para evitar subprocess repetido
+5) Cobrir com testes sem ffmpeg real via hook de runCommand/lookPath
+
+Benefício: autonomia do runtime, menos acoplamento operacional entre projetos, mesma qualidade de áudio no Telegram (OGG Opus mono 64k).
+
+
+---
+
+## Reaper seguro: limpar só '.transcode-cache*' sob raiz TTS (2026-06-02)
+
+Ao integrar cleanup de cache de transcode com reaper global, não usar recursão cega na raiz de attachments.
+
+Padrão seguro aplicado:
+- reapOldTTSAttachments só entra em subdirs com prefixo '.transcode-cache'
+- subdirs fora desse padrão são ignorados
+- arquivos antigos em cache são removidos por TTL
+- cache dir vazio é removido best-effort
+
+Esse padrão evita apagar artefatos de outras features e mantém limpeza automática do transcode cache.
+
+
+---
+
+## OpenAlice langgraph_agent underrated upside — Expansionist council take (2026-06-09)
+
+The langgraph_agent sidecar is a general-purpose multi-agent research platform disguised as a trading bot. Underrated elements: (1) shadow-only architecture is a free, safe LLM eval harness — rare in retail trading where the norm is "no analysis or real money at risk"; (2) capability gateway at /api/langgraph/capabilities is mislabeled — it's a generic MCP skill broker, not LangGraph-specific. Allowlist shows ~20 skills consumable by any external agent (Claude Code, Codex, Hermes, OpenClaw) over MCP. Rename, spec, ship as openalice-mcp-broker. (3) Etraider→OpenAlice port is the first faithful TypeScript port of TradingAgents (AGPL-3.0), 351-line STATUS with per-task evidence — publishable as real OSS, not just local overlay. (4) rank_aware candidate selection with feature-flag scaffold, redacted audit, fail-closed promotion is publication-grade ML infra. Reframe: shadow-mode multi-agent research platform with pluggable capability broker. Trading is the demo; medical/legal/security/supply-chain is the market.
+
+
+---
+
+## Restore Hermes após formatação (2026-06-09)
+
+Para restaurar o Hermes após formatação:
+1. Clonar o repo: `git clone git@github.com:Mlaurindo30/hermes_thoth.git`
+2. Instalar o Hermes Agent normalmente
+3. Rodar: `cd hermes_thoth && bash scripts/restore_hermes.sh`
+4. Editar `~/.hermes/.env` — substituir `<MASKED>` pelos secrets reais (DeepSeek, NVIDIA, LM Studio, etc.)
+5. Editar `~/.hermes/config.yaml` — verificar providers e API keys
+6. Configurar git: `git config --global user.name "Michel Laurindo" && git config --global user.email "michel.laurindo@outlook.com"`
+7. Instalar plugins extras se necessário: `hermes plugins install ...`
+8. Restartar o Hermes
+
+Skills críticas salvas: dynamic-workflow, council, devin-mode, kiro-mode, windsurf-cascade, manus-loop, comet-security, tts-system, hermes-infrastructure, segundo-cerebro, systematic-debugging, subagent-driven-development, test-driven-development, coding-agent-toolchain. Total: 58 skills customizadas.
