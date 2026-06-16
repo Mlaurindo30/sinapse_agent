@@ -1,16 +1,16 @@
-# Graph Report - cerebro  (2026-06-15)
+# Graph Report - cerebro  (2026-06-16)
 
 ## Corpus Check
-- 196 files · ~88,348 words
+- 197 files · ~88,366 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1805 nodes · 1847 edges · 215 communities (173 shown, 42 thin omitted)
+- 1807 nodes · 1848 edges · 216 communities (173 shown, 43 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8fd9b873`
+- Built from commit: `0d81825f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -199,6 +199,7 @@
 - [[_COMMUNITY_Community 212|Community 212]]
 - [[_COMMUNITY_Community 213|Community 213]]
 - [[_COMMUNITY_Community 214|Community 214]]
+- [[_COMMUNITY_Community 215|Community 215]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Sessão Episódica: 2026-06-13 02:12` - 31 edges
@@ -224,7 +225,7 @@
 - `runHook()` --calls--> `runScript()`  [EXTRACTED]
   .claude/scripts/tests/qmd-refresh.integration.test.ts → .claude/scripts/tests/_helpers.ts
 
-## Communities (215 total, 42 thin omitted)
+## Communities (216 total, 43 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.15
@@ -795,9 +796,9 @@ Cohesion: 0.50
 Nodes (3): hostPath(), RunResult, path
 
 ## Knowledge Gaps
-- **1044 isolated node(s):** `MCP Decision`, `brain/North Star.md`, `brain/Memories.md`, `brain/Key Decisions.md`, `brain/Patterns.md` (+1039 more)
+- **1045 isolated node(s):** `MCP Decision`, `MCP Decision`, `brain/North Star.md`, `brain/Memories.md`, `brain/Key Decisions.md` (+1040 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **42 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **43 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -808,8 +809,8 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **Why does `Current State` connect `Community 158` to `Community 192`, `Community 197`, `Community 72`, `Community 73`, `Community 98`, `Community 99`, `Community 100`, `Community 101`, `Community 102`, `Community 103`, `Community 104`, `Community 105`, `Community 106`, `Community 107`, `Community 108`, `Community 109`, `Community 110`, `Community 111`, `Community 112`, `Community 113`, `Community 114`?**
   _High betweenness centrality (0.002) - this node is a cross-community bridge._
-- **What connects `MCP Decision`, `brain/North Star.md`, `brain/Memories.md` to the rest of the system?**
-  _1048 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `MCP Decision`, `MCP Decision`, `brain/North Star.md` to the rest of the system?**
+  _1049 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**

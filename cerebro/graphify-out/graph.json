@@ -4,23 +4,42 @@
   "graph": {},
   "nodes": [
     {
+      "label": "2026-06-16-MCP-Decision.md",
+      "file_type": "document",
+      "source_file": "work/active/2026-06-16-MCP-Decision.md",
+      "source_location": "L1",
+      "content": "---\ntags: [decision]\nstatus: active\ncreated: 2026-06-16\nupdated: 2026-06-16\nsource: hermes-session\n---\n\n# MCP Decision\n\nTest from MCP\n",
+      "id": "work_active_2026_06_16_mcp_decision_md",
+      "community": 215,
+      "norm_label": "2026-06-16-mcp-decision.md"
+    },
+    {
+      "label": "MCP Decision",
+      "file_type": "document",
+      "source_file": "work/active/2026-06-16-MCP-Decision.md",
+      "source_location": "L9",
+      "id": "active_2026_06_16_mcp_decision_mcp_decision",
+      "community": 215,
+      "norm_label": "mcp decision"
+    },
+    {
       "label": "2026-06-15-MCP-Decision.md",
       "file_type": "document",
       "source_file": "work/active/2026-06-15-MCP-Decision.md",
       "source_location": "L1",
       "content": "---\ntags: [decision]\nstatus: active\ncreated: 2026-06-15\nupdated: 2026-06-15\nsource: hermes-session\n---\n\n# MCP Decision\n\nTest from MCP\n",
-      "id": "work_active_2026_06_15_mcp_decision_md",
       "community": 214,
-      "norm_label": "2026-06-15-mcp-decision.md"
+      "norm_label": "2026-06-15-mcp-decision.md",
+      "id": "work_active_2026_06_15_mcp_decision_md"
     },
     {
       "label": "MCP Decision",
       "file_type": "document",
       "source_file": "work/active/2026-06-15-MCP-Decision.md",
       "source_location": "L9",
-      "id": "active_2026_06_15_mcp_decision_mcp_decision",
       "community": 214,
-      "norm_label": "mcp decision"
+      "norm_label": "mcp decision",
+      "id": "active_2026_06_15_mcp_decision_mcp_decision"
     },
     {
       "label": "vault-manifest.json",
@@ -16274,12 +16293,22 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "work/active/2026-06-16-MCP-Decision.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "work_active_2026_06_16_mcp_decision_md",
+      "target": "active_2026_06_16_mcp_decision_mcp_decision",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "work/active/2026-06-15-MCP-Decision.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "work_active_2026_06_15_mcp_decision_md",
-      "target": "active_2026_06_15_mcp_decision_mcp_decision",
-      "confidence_score": 1.0
+      "target": "active_2026_06_15_mcp_decision_mcp_decision"
     },
     {
       "relation": "contains",
@@ -34957,5 +34986,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8fd9b87390839789b5ab9d096160bb0e8410b1bd"
+  "built_at_commit": "0d81825fdc1d8a424cfcdf86cdbc75687e3375a1"
 }
