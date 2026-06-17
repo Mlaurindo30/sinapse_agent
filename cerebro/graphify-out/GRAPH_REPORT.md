@@ -1,16 +1,16 @@
 # Graph Report - cerebro  (2026-06-17)
 
 ## Corpus Check
-- 213 files · ~89,111 words
+- 234 files · ~91,321 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2067 nodes · 2059 edges · 266 communities (200 shown, 66 thin omitted)
+- 2227 nodes · 2199 edges · 280 communities (214 shown, 66 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `23e46b38`
+- Built from commit: `9791c7a3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -146,13 +146,11 @@
 - [[_COMMUNITY_Community 128|Community 128]]
 - [[_COMMUNITY_Community 129|Community 129]]
 - [[_COMMUNITY_Community 130|Community 130]]
-- [[_COMMUNITY_Community 146|Community 146]]
 - [[_COMMUNITY_Community 147|Community 147]]
 - [[_COMMUNITY_Community 148|Community 148]]
 - [[_COMMUNITY_Community 149|Community 149]]
 - [[_COMMUNITY_Community 150|Community 150]]
 - [[_COMMUNITY_Community 151|Community 151]]
-- [[_COMMUNITY_Community 152|Community 152]]
 - [[_COMMUNITY_Community 153|Community 153]]
 - [[_COMMUNITY_Community 154|Community 154]]
 - [[_COMMUNITY_Community 155|Community 155]]
@@ -180,17 +178,14 @@
 - [[_COMMUNITY_Community 193|Community 193]]
 - [[_COMMUNITY_Community 194|Community 194]]
 - [[_COMMUNITY_Community 195|Community 195]]
-- [[_COMMUNITY_Community 196|Community 196]]
 - [[_COMMUNITY_Community 197|Community 197]]
 - [[_COMMUNITY_Community 198|Community 198]]
 - [[_COMMUNITY_Community 199|Community 199]]
 - [[_COMMUNITY_Community 200|Community 200]]
-- [[_COMMUNITY_Community 201|Community 201]]
 - [[_COMMUNITY_Community 202|Community 202]]
 - [[_COMMUNITY_Community 203|Community 203]]
 - [[_COMMUNITY_Community 204|Community 204]]
 - [[_COMMUNITY_Community 205|Community 205]]
-- [[_COMMUNITY_Community 206|Community 206]]
 - [[_COMMUNITY_Community 207|Community 207]]
 - [[_COMMUNITY_Community 208|Community 208]]
 - [[_COMMUNITY_Community 209|Community 209]]
@@ -235,40 +230,58 @@
 - [[_COMMUNITY_Community 249|Community 249]]
 - [[_COMMUNITY_Community 250|Community 250]]
 - [[_COMMUNITY_Community 265|Community 265]]
+- [[_COMMUNITY_Community 266|Community 266]]
+- [[_COMMUNITY_Community 267|Community 267]]
+- [[_COMMUNITY_Community 268|Community 268]]
+- [[_COMMUNITY_Community 269|Community 269]]
+- [[_COMMUNITY_Community 270|Community 270]]
+- [[_COMMUNITY_Community 271|Community 271]]
+- [[_COMMUNITY_Community 272|Community 272]]
+- [[_COMMUNITY_Community 273|Community 273]]
+- [[_COMMUNITY_Community 274|Community 274]]
+- [[_COMMUNITY_Community 275|Community 275]]
+- [[_COMMUNITY_Community 276|Community 276]]
+- [[_COMMUNITY_Community 277|Community 277]]
+- [[_COMMUNITY_Community 278|Community 278]]
+- [[_COMMUNITY_Community 279|Community 279]]
+- [[_COMMUNITY_Community 280|Community 280]]
+- [[_COMMUNITY_Community 282|Community 282]]
+- [[_COMMUNITY_Community 283|Community 283]]
+- [[_COMMUNITY_Community 284|Community 284]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Sessão Episódica: 2026-06-13 02:12` - 32 edges
 2. `Sessão Episódica: 2026-06-12 21:11` - 32 edges
-3. `Patterns & Conventions` - 28 edges
-4. `Patterns & Conventions` - 27 edges
-5. `Current State` - 24 edges
-6. `compilerOptions` - 16 edges
-7. `Sinapse Agent — Vault (AGENTS.md)` - 16 edges
-8. `Sinapse Agent — Vault (CLAUDE.md)` - 16 edges
-9. `Obsidian Bases Skill` - 15 edges
-10. `Obsidian Flavored Markdown Skill` - 15 edges
+3. `Sessão Episódica: 2026-06-17 15:15` - 31 edges
+4. `Sessão Episódica: 2026-06-17 15:13` - 31 edges
+5. `Patterns & Conventions` - 28 edges
+6. `Patterns & Conventions` - 27 edges
+7. `Current State` - 24 edges
+8. `compilerOptions` - 16 edges
+9. `Sinapse Agent — Vault (AGENTS.md)` - 16 edges
+10. `Sinapse Agent — Vault (CLAUDE.md)` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `runHook()` --calls--> `runScript()`  [EXTRACTED]
   .claude/scripts/tests/session-start.integration.test.ts → .claude/scripts/tests/_helpers.ts
-- `runScript()` --calls--> `runScript()`  [EXTRACTED]
-  .claude/scripts/tests/validate-write.test.ts → .claude/scripts/tests/_helpers.ts
 - `runScript()` --calls--> `runScript()`  [EXTRACTED]
   .claude/scripts/tests/classify-message.test.ts → .claude/scripts/tests/_helpers.ts
 - `runScript()` --calls--> `runScript()`  [EXTRACTED]
   .claude/scripts/tests/stop-checklist.test.ts → .claude/scripts/tests/_helpers.ts
 - `runHook()` --calls--> `runScript()`  [EXTRACTED]
   .claude/scripts/tests/qmd-refresh.integration.test.ts → .claude/scripts/tests/_helpers.ts
+- `upsertIgnoreInYaml()` --calls--> `escapeRegex()`  [EXTRACTED]
+  .claude/scripts/lib/qmd-ignore.ts → .claude/scripts/lib/regex.ts
 
-## Communities (266 total, 66 thin omitted)
+## Communities (280 total, 66 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.15
 Nodes (11): code:yaml (# Global filters apply to ALL views in the base), code:markdown (![[MyBase.base]]), code:yaml (formulas:), Default Summary Formulas, Embedding Bases, Formula Syntax, Obsidian Bases Skill, References (+3 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.14
-Nodes (14): buildQmdCommand(), composeWorkerInvocations(), require, resolveQmdEntry(), qmdArgsWithIndex(), invocations, MANIFEST_PATH, qmdIndex (+6 more)
+Cohesion: 0.25
+Nodes (7): Ações, Bullets, Contexto, Observações, Related, Resumo, sessão 2026-06-17 16:41
 
 ### Community 2 - "Community 2"
 Cohesion: 0.10
@@ -283,12 +296,12 @@ Cohesion: 0.06
 Nodes (38): frontmatter_required, 1-1, global, incident, person, team, work-note, infrastructure (+30 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.08
-Nodes (32): warn(), buildCollectionAddArgs(), isContextRemoveBenign(), makeCollectionAddBenignMatcher(), IGNORE_BLOCK_RE, qmdConfigPath(), readObsidianIgnore(), translateToGlob() (+24 more)
+Cohesion: 0.11
+Nodes (22): warn(), IGNORE_BLOCK_RE, qmdConfigPath(), readObsidianIgnore(), translateToGlob(), upsertIgnoreInYaml(), writeQmdIgnore(), after (+14 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.12
-Nodes (16): classify(), CJK_CASES, CJKCase, { code }, { code, stdout }, { code, stdout, stderr }, data, n (+8 more)
+Cohesion: 0.05
+Nodes (41): anyWordMatch(), classify(), compileMatcher(), SIGNAL_MATCHERS, buildCollectionAddArgs(), isContextRemoveBenign(), makeCollectionAddBenignMatcher(), escapeRegex() (+33 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.06
@@ -407,16 +420,16 @@ Cohesion: 0.14
 Nodes (13): added, addedIdx, changedIdx, fixedIdx, FIXTURE, fp, GLOBS, once (+5 more)
 
 ### Community 37 - "Community 37"
-Cohesion: 0.18
-Nodes (9): readStdinJson(), writeHookOutput(), fields, input, values, hints, HookInput, input (+1 more)
+Cohesion: 0.12
+Nodes (14): readStdinJson(), writeHookOutput(), fields, input, values, hints, HookInput, input (+6 more)
 
 ### Community 38 - "Community 38"
 Cohesion: 0.20
 Nodes (11): ROOT_FILES, shouldSkipFile(), SKIP_PATH_SEGMENTS, validateContent(), validateFile(), base, hintList, HookInput (+3 more)
 
 ### Community 39 - "Community 39"
-Cohesion: 0.15
-Nodes (13): isMainModule(), backupDir, dest, formatTimestamp(), HookInput, input, listBackups(), pruneBackups() (+5 more)
+Cohesion: 0.17
+Nodes (12): isMainModule(), backupDir, dest, formatTimestamp(), HookInput, input, listBackups(), pruneBackups() (+4 more)
 
 ### Community 40 - "Community 40"
 Cohesion: 0.14
@@ -714,10 +727,6 @@ Nodes (4): Decisions, Learnings, Session: 2026-05-24 22:37, Summary
 Cohesion: 0.33
 Nodes (3): Gotchas, Hermes Agent, Install
 
-### Community 146 - "Community 146"
-Cohesion: 0.20
-Nodes (10): runScript(), hostPath(), RunResult, runScript(), runHook(), runHook(), runScript(), SCRIPT (+2 more)
-
 ### Community 147 - "Community 147"
 Cohesion: 0.18
 Nodes (10): code:sqlite-query (SELECT created_at, type, title, content), code:sqlite-query (SELECT created_at, title, content), code:sqlite-query (SELECT label, type, source_file), code:sqlite-query (SELECT n.label as 'Nota', n.type as 'Tipo'), 🧠 Hive-Mind Dashboard, 🕸️ Neurônios Órfãos (Sem conexões), ⚡ Otimizações de Terminal (RTK), 📊 Status do Cérebro (+2 more)
@@ -725,10 +734,6 @@ Nodes (10): code:sqlite-query (SELECT created_at, type, title, content), code:sq
 ### Community 151 - "Community 151"
 Cohesion: 0.22
 Nodes (9): Cards View, code:yaml (views:), code:yaml (views:), code:yaml (views:), code:yaml (views:), List View, Map View, Table View (+1 more)
-
-### Community 152 - "Community 152"
-Cohesion: 0.18
-Nodes (7): after, before, SCRIPT, SCRIPT_DIR, { stdout, code }, { stdout, stderr, code }, VAULT_ROOT
 
 ### Community 153 - "Community 153"
 Cohesion: 0.25
@@ -743,8 +748,8 @@ Cohesion: 0.33
 Nodes (5): 🔑 Autenticação, 🚀 Como expor para a Nuvem, 📡 Endpoints Disponíveis, Passo a Passo (Tailscale - Sugerido):, 🔐 Segurança do Hive-Mind Cloud
 
 ### Community 156 - "Community 156"
-Cohesion: 0.18
-Nodes (10): body, { code }, { code, stdout, stderr }, data, path, runOn(), runScript(), SCRIPT (+2 more)
+Cohesion: 0.05
+Nodes (36): runScript(), hostPath(), RunResult, runScript(), path, after, before, runHook() (+28 more)
 
 ### Community 157 - "Community 157"
 Cohesion: 0.40
@@ -774,21 +779,13 @@ Nodes (5): code:text (The text in the image is not clear enough to transcribe ac
 Cohesion: 0.33
 Nodes (5): code:text (The image quality does not allow for Optical Character Recog), Descrição, Memória Visual: CAP-20260610-195934-MCP-Test-Capture, OCR (Texto Extraído), Tópicos Inferidos
 
-### Community 196 - "Community 196"
-Cohesion: 0.18
-Nodes (10): allDeclared, DECLARED_OVERLAP_PAIRS, names, pairs, phraseToSignals, pu, required, shared (+2 more)
-
 ### Community 197 - "Community 197"
 Cohesion: 0.50
 Nodes (4): Decisions, Learnings, Session: 2026-06-11 21:07, Summary
 
-### Community 201 - "Community 201"
-Cohesion: 0.36
-Nodes (5): anyWordMatch(), compileMatcher(), SIGNAL_MATCHERS, Signal, SIGNALS
-
 ### Community 202 - "Community 202"
-Cohesion: 0.33
-Nodes (5): checklist, HookInput, input, SCRIPT_DIR, WORKER_PATH
+Cohesion: 0.29
+Nodes (6): Ações, Contexto, Observações, Related, Resumo, {{title:sessão YYYY-MM-DD HH:MM}}
 
 ### Community 204 - "Community 204"
 Cohesion: 0.06
@@ -797,10 +794,6 @@ Nodes (31): [decision] A / B : C \ D: Content, [decision] AAAAAAAAAAAAAAAAAAAAAA
 ### Community 205 - "Community 205"
 Cohesion: 0.06
 Nodes (31): [decision] A / B : C \ D: Content, [decision] AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB: Content, [decision] Decisão 0: Conteúdo da decisão 0, [decision] Decisão 1: Conteúdo da decisão 1, [decision] Decisão de Manter Processo ComfyUI (PID 54447) após Investigação de VRAM: O usuário questionou o consumo de 50% (5GB de 12GB) de sua VRAM. A investigação via nvidia-smi confirmou que o processo PID 54447 (ComfyUI) é o principal consumidor (4GB)., [decision] Fix Ideogram 4 shape mismatch by dynamic dimension detection: Identified shape mismatch in Ideogram 4 model (53248 vs 2560). Patched `comfy/model_detection.py` to dynamically detect `llm_features_dim` and `comfy/supported_models_base.py` to prevent default values from overwriting detected ones., [decision] 🚀 Lançamento do produto: Conteúdo, [decision] MCP Decision: Test from MCP (+23 more)
-
-### Community 206 - "Community 206"
-Cohesion: 0.22
-Nodes (8): { code, stderr }, idx, projectFile, REQUIRED_SECTIONS, SCRIPT, SCRIPT_DIR, { stdout }, { stdout, stderr, code }
 
 ### Community 207 - "Community 207"
 Cohesion: 0.40
@@ -864,11 +857,11 @@ Nodes (6): Context, Decisions, Related, {{title}}, What, Why
 
 ### Community 242 - "Community 242"
 Cohesion: 0.33
-Nodes (5): code:text (The text in the image is not clear enough to transcribe accu), Descrição, Memória Visual: CAP-20260610-195656-test-capture, OCR (Texto Extraído), Tópicos Inferidos
+Nodes (5): code:text (The OCR (Optical Character Recognition) process would typica), Descrição, Memória Visual: CAP-20260610-195656-test-capture, OCR (Texto Extraído), Tópicos Inferidos
 
 ### Community 243 - "Community 243"
 Cohesion: 0.33
-Nodes (5): code:text (The image quality does not allow for Optical Character Recog), Descrição, Memória Visual: CAP-20260610-195934-MCP-Test-Capture, OCR (Texto Extraído), Tópicos Inferidos
+Nodes (5): code:text (The image is too blurry and low-resolution to perform Optica), Descrição, Memória Visual: CAP-20260610-195934-MCP-Test-Capture, OCR (Texto Extraído), Tópicos Inferidos
 
 ### Community 244 - "Community 244"
 Cohesion: 0.33
@@ -878,25 +871,97 @@ Nodes (5): Definition, Growth Notes, Proficiency Levels, Related, {{title}}
 Cohesion: 0.40
 Nodes (4): How This Works, Linking Convention, Thinking Space, When to Use
 
+### Community 266 - "Community 266"
+Cohesion: 0.06
+Nodes (31): [decision] A / B : C \ D: Content, [decision] AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB: Content, [decision] Decisão 0: Conteúdo da decisão 0, [decision] Decisão 1: Conteúdo da decisão 1, [decision] Decisão de Manter Processo ComfyUI (PID 54447) após Investigação de VRAM: O usuário questionou o consumo de 50% (5GB de 12GB) de sua VRAM. A investigação via nvidia-smi confirmou que o processo PID 54447 (ComfyUI) é o principal consumidor (4GB)., [decision] Fix Ideogram 4 shape mismatch by dynamic dimension detection: Identified shape mismatch in Ideogram 4 model (53248 vs 2560). Patched `comfy/model_detection.py` to dynamically detect `llm_features_dim` and `comfy/supported_models_base.py` to prevent default values from overwriting detected ones., [decision] 🚀 Lançamento do produto: Conteúdo, [decision] MCP Decision: Test from MCP (+23 more)
+
+### Community 267 - "Community 267"
+Cohesion: 0.50
+Nodes (3): Evidência (Groundedness), Fix Ideogram 4 Shape Mismatch, Sinapses
+
+### Community 268 - "Community 268"
+Cohesion: 0.50
+Nodes (3): Evidência (Groundedness), Keep ComfyUI Process and Manage VRAM, Sinapses
+
+### Community 269 - "Community 269"
+Cohesion: 0.50
+Nodes (3): Evidência (Groundedness), Migrate Server to Hetzner, Sinapses
+
+### Community 270 - "Community 270"
+Cohesion: 0.06
+Nodes (31): [decision] Decisão 2: Conteúdo da decisão 2, [decision] MCP Decision: Test from MCP, [decision] MCP Decision: Test from MCP, [decision] MCP Decision: Test from MCP, [decision] MCP Decision: Test from MCP, [decision] MCP Decision: Test from MCP, [decision] MCP Decision: Test from MCP, [decision] Migrar servidor: Decisão: migrar para Hetzner (+23 more)
+
+### Community 271 - "Community 271"
+Cohesion: 0.50
+Nodes (3): Decisão 2, Evidência (Groundedness), Sinapses
+
+### Community 272 - "Community 272"
+Cohesion: 0.50
+Nodes (3): Evidência (Groundedness), Sinapses, Unique Pattern
+
+### Community 273 - "Community 273"
+Cohesion: 0.50
+Nodes (3): Evidência (Groundedness), Padrão encontrado, Sinapses
+
+### Community 274 - "Community 274"
+Cohesion: 0.50
+Nodes (3): Evidência (Groundedness), Migrar servidor, Sinapses
+
+### Community 275 - "Community 275"
+Cohesion: 0.50
+Nodes (3): Evidência (Groundedness), Sinapses, Test
+
+### Community 276 - "Community 276"
+Cohesion: 0.50
+Nodes (3): Evidência (Groundedness), MCP Decision, Sinapses
+
+### Community 277 - "Community 277"
+Cohesion: 0.14
+Nodes (14): buildQmdCommand(), composeWorkerInvocations(), require, resolveQmdEntry(), qmdArgsWithIndex(), invocations, MANIFEST_PATH, qmdIndex (+6 more)
+
+### Community 278 - "Community 278"
+Cohesion: 0.25
+Nodes (7): Ações, Bullets, Contexto, Observações, Related, Resumo, sessão 2026-06-17 17:06
+
+### Community 279 - "Community 279"
+Cohesion: 0.33
+Nodes (5): Aprendizados, {{date:YYYY-MM-DD}} — Daily Log, Highlights, Referências, Sessões do dia
+
+### Community 280 - "Community 280"
+Cohesion: 0.25
+Nodes (7): Ações, Bullets, Contexto, Observações, Related, Resumo, sessão 2026-06-17 16:21
+
+### Community 282 - "Community 282"
+Cohesion: 0.29
+Nodes (6): Ações, Contexto, Observações, Related, Resumo, sessão 2026-06-17 16:40
+
+### Community 283 - "Community 283"
+Cohesion: 0.29
+Nodes (6): Ações, Contexto, Observações, Related, Resumo, sessão 2026-06-17 17:08
+
+### Community 284 - "Community 284"
+Cohesion: 0.25
+Nodes (7): Ações, Bullets, Contexto, Observações, Related, Resumo, sessão 2026-06-17 17:08
+
 ## Knowledge Gaps
-- **1150 isolated node(s):** `MCP Decision`, `RESOLVER (skill dispatcher)`, `brain-first.md`, `builder-ethos.md`, `filing-rules.md` (+1145 more)
+- **1267 isolated node(s):** `Contexto`, `Ações`, `Observações`, `Bullets`, `Related` (+1262 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **66 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `escapeRegex()` connect `Community 5` to `Community 201`, `Community 2`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **Why does `runScript()` connect `Community 146` to `Community 152`, `Community 156`, `Community 206`, `Community 6`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **Why does `resolveQmdEntry()` connect `Community 1` to `Community 152`, `Community 2`, `Community 14`?**
+- **Why does `Current State` connect `Community 158` to `Community 192`, `Community 197`, `Community 72`, `Community 73`, `Community 98`, `Community 99`, `Community 100`, `Community 101`, `Community 102`, `Community 103`, `Community 104`, `Community 105`, `Community 106`, `Community 107`, `Community 108`, `Community 109`, `Community 110`, `Community 111`, `Community 112`, `Community 113`, `Community 114`?**
   _High betweenness centrality (0.002) - this node is a cross-community bridge._
-- **What connects `MCP Decision`, `RESOLVER (skill dispatcher)`, `brain-first.md` to the rest of the system?**
-  _1154 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.13725490196078433 - nodes in this community are weakly interconnected._
+- **Why does `escapeRegex()` connect `Community 6` to `Community 2`, `Community 5`?**
+  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **Why does `resolveQmdEntry()` connect `Community 277` to `Community 2`, `Community 156`, `Community 14`?**
+  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **What connects `Contexto`, `Ações`, `Observações` to the rest of the system?**
+  _1271 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.09619450317124736 - nodes in this community are weakly interconnected._
 - **Should `Community 3` be split into smaller, more focused modules?**
   _Cohesion score 0.047619047619047616 - nodes in this community are weakly interconnected._
+- **Should `Community 4` be split into smaller, more focused modules?**
+  _Cohesion score 0.06153846153846154 - nodes in this community are weakly interconnected._
