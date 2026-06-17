@@ -1,4 +1,5 @@
 ---
+related: ["[[hive-mind-atlas-taxonomy]]", "[[neuronio-05444ecaf85ee5c1]]", "[[neuronio-d12cb3e77ddbd75f]]"]
 type: decision
 topic: atlas
 integrity_hash: 6c778da7e661cbb9

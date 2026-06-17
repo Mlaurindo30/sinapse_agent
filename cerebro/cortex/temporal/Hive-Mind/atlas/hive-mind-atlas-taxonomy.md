@@ -1,4 +1,5 @@
 ---
+related: ["[[neuronio-6c778da7e661cbb9]]"]
 type: decision
 topic: atlas
 last_updated: 2026-06-10 12:50

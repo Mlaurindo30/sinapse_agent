@@ -1,4 +1,5 @@
 ---
+related: ["[[neuronio-d12cb3e77ddbd75f]]"]
 type: fact
 topic: test_swarm
 last_updated: 2026-06-10 14:00

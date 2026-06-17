@@ -1,4 +1,5 @@
 ---
+related: ["[[neuronio-d12cb3e77ddbd75f]]"]
 type: decision
 topic: security
 last_updated: 2026-06-10 12:50

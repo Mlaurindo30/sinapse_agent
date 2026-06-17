@@ -1,16 +1,16 @@
 # Graph Report - cerebro  (2026-06-17)
 
 ## Corpus Check
-- 202 files · ~88,472 words
+- 214 files · ~89,106 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1811 nodes · 1850 edges · 217 communities (173 shown, 44 thin omitted)
+- 2065 nodes · 2059 edges · 264 communities (199 shown, 65 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ad580911`
+- Built from commit: `17eb1375`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -197,21 +197,55 @@
 - [[_COMMUNITY_Community 210|Community 210]]
 - [[_COMMUNITY_Community 211|Community 211]]
 - [[_COMMUNITY_Community 212|Community 212]]
+- [[_COMMUNITY_Community 213|Community 213]]
 - [[_COMMUNITY_Community 214|Community 214]]
 - [[_COMMUNITY_Community 215|Community 215]]
 - [[_COMMUNITY_Community 217|Community 217]]
+- [[_COMMUNITY_Community 218|Community 218]]
+- [[_COMMUNITY_Community 219|Community 219]]
+- [[_COMMUNITY_Community 220|Community 220]]
+- [[_COMMUNITY_Community 221|Community 221]]
+- [[_COMMUNITY_Community 222|Community 222]]
+- [[_COMMUNITY_Community 223|Community 223]]
+- [[_COMMUNITY_Community 224|Community 224]]
+- [[_COMMUNITY_Community 225|Community 225]]
+- [[_COMMUNITY_Community 226|Community 226]]
+- [[_COMMUNITY_Community 227|Community 227]]
+- [[_COMMUNITY_Community 228|Community 228]]
+- [[_COMMUNITY_Community 229|Community 229]]
+- [[_COMMUNITY_Community 230|Community 230]]
+- [[_COMMUNITY_Community 231|Community 231]]
+- [[_COMMUNITY_Community 232|Community 232]]
+- [[_COMMUNITY_Community 233|Community 233]]
+- [[_COMMUNITY_Community 234|Community 234]]
+- [[_COMMUNITY_Community 235|Community 235]]
+- [[_COMMUNITY_Community 236|Community 236]]
+- [[_COMMUNITY_Community 237|Community 237]]
+- [[_COMMUNITY_Community 238|Community 238]]
+- [[_COMMUNITY_Community 239|Community 239]]
+- [[_COMMUNITY_Community 240|Community 240]]
+- [[_COMMUNITY_Community 241|Community 241]]
+- [[_COMMUNITY_Community 242|Community 242]]
+- [[_COMMUNITY_Community 243|Community 243]]
+- [[_COMMUNITY_Community 244|Community 244]]
+- [[_COMMUNITY_Community 245|Community 245]]
+- [[_COMMUNITY_Community 246|Community 246]]
+- [[_COMMUNITY_Community 247|Community 247]]
+- [[_COMMUNITY_Community 248|Community 248]]
+- [[_COMMUNITY_Community 249|Community 249]]
+- [[_COMMUNITY_Community 250|Community 250]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `Sessão Episódica: 2026-06-13 02:12` - 31 edges
-2. `Sessão Episódica: 2026-06-12 21:11` - 31 edges
+1. `Sessão Episódica: 2026-06-13 02:12` - 32 edges
+2. `Sessão Episódica: 2026-06-12 21:11` - 32 edges
 3. `Patterns & Conventions` - 28 edges
-4. `Current State` - 23 edges
-5. `compilerOptions` - 16 edges
-6. `Sinapse Agent — Vault (AGENTS.md)` - 16 edges
-7. `Sinapse Agent — Vault (CLAUDE.md)` - 16 edges
-8. `Obsidian Bases Skill` - 15 edges
-9. `Obsidian Flavored Markdown Skill` - 15 edges
-10. `Functions Reference` - 14 edges
+4. `Patterns & Conventions` - 27 edges
+5. `Current State` - 24 edges
+6. `compilerOptions` - 16 edges
+7. `Sinapse Agent — Vault (AGENTS.md)` - 16 edges
+8. `Sinapse Agent — Vault (CLAUDE.md)` - 16 edges
+9. `Obsidian Bases Skill` - 15 edges
+10. `Obsidian Flavored Markdown Skill` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `runHook()` --calls--> `runScript()`  [EXTRACTED]
@@ -225,7 +259,7 @@
 - `runHook()` --calls--> `runScript()`  [EXTRACTED]
   .claude/scripts/tests/qmd-refresh.integration.test.ts → .claude/scripts/tests/_helpers.ts
 
-## Communities (217 total, 44 thin omitted)
+## Communities (264 total, 65 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.15
@@ -260,7 +294,7 @@ Cohesion: 0.06
 Nodes (33): Agent Guidelines, code:bash (ls graphify-out/graph.json                          # graph ), code:bash (obsidian read file="Note Name"                    # Read a n), Creating Notes, Custom Slash Commands, Decision Records, Don't Mix Contexts, Ending a Substantial Session (+25 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.06
+Cohesion: 0.07
 Nodes (31): About Michel, Anti-goals, Antiobjetivos, Aspirations, Como Prefiro Trabalhar, Contexto Pessoal, Current Focus, Curto Prazo (proximo 30 dias) (+23 more)
 
 ### Community 9 - "Community 9"
@@ -276,7 +310,7 @@ Cohesion: 0.07
 Nodes (27): 1. Create a New Canvas, 2. Add a Node to an Existing Canvas, 3. Connect Two Nodes, 4. Edit an Existing Canvas, code:json ({), code:json ({), code:json ({), code:json ({) (+19 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.09
+Cohesion: 0.08
 Nodes (21): 1. The Contrarian, 2. The First Principles Thinker, 3. The Expansionist, 4. The Outsider, 5. The Executor, code:block1, code:block2, code:block3 (+13 more)
 
 ### Community 13 - "Community 13"
@@ -284,8 +318,8 @@ Cohesion: 0.10
 Nodes (21): Classification Heuristics, code:yaml (---), Execution Process, Important, Mode A: Classification, Mode B: Execution, Modes, Step 1: Build Context (+13 more)
 
 ### Community 14 - "Community 14"
-Cohesion: 0.23
-Nodes (13): debug(), isDebounced(), QmdInvocation, readSentinelMtime(), shouldRefreshForPath(), SKIP_SEGMENTS, spawnDetachedWorker(), touchSentinel() (+5 more)
+Cohesion: 0.16
+Nodes (18): debug(), isDebounced(), QmdInvocation, readSentinelMtime(), resolveVaultRoot(), shouldRefreshForPath(), SKIP_SEGMENTS, spawnDetachedWorker() (+10 more)
 
 ### Community 15 - "Community 15"
 Cohesion: 0.09
@@ -312,15 +346,15 @@ Cohesion: 0.11
 Nodes (16): Análise Fria: {{NOME DA FERRAMENTA}}, code:block1 (## {{DATA}} — {{TÍTULO RESUMIDO}}), Decisão sugerida, Fase 1 — *[nome]*, Fase 2 — *[nome]*, Fase 3 — *[nome]*, Fontes, O que NÃO fazer / NÃO incluir (+8 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (15): Análise Fria: EvoNexus, code:block1 (## 2026-05-24 — EvoNexus rejeitado para THOTH AI), Decisão sugerida, Fase 1 — Auditoria do fork, Fase 2 — Teste isolado, Fontes, O que NÃO fazer / NÃO incluir, O que é / O que faz (+7 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (15): Análise Fria: GitNexus, code:block1 (## 2026-05-24 — GitNexus rejeitado para THOTH AI), Decisão sugerida, Fase 1 — Teste em codebase isolado, Fase 2 — Integração MCP condicional, Fontes, O que NÃO fazer / NÃO incluir, O que é / O que faz (+7 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (15): Análise Fria: Manus Agent, Decisão sugerida, Fase 1 — Event stream tipado (1h), Fase 2 — Planner com pseudocódigo (2h), Fase 3 — Knowledge module condicional (1h), Fontes, O que NÃO entra em nenhuma fase, O que NÃO fazer / NÃO incluir (+7 more)
 
 ### Community 25 - "Community 25"
@@ -352,19 +386,19 @@ Cohesion: 0.12
 Nodes (14): 1. Review What Was Done, 2. Verify Note Quality, 3. Check Index Consistency, 4. Check for Orphans, 5. Archive Check, 6. Ways of Working Review, 7. Suggest Improvements, 8. Report (+6 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (13): Arquitetura, Bug encontrado durante impl, code:block1 (Generate(req)), Comportamento fail-safe, Contexto, Decisão, Formato de arquivo, PHASE-34 Disk Cache persistente para TTS — design rationale e trade-offs (+5 more)
 
 ### Community 33 - "Community 33"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (13): Análise Fria: Context Mode, code:block1 (## 2026-05-23 — Context Mode rejeitado para o ecossistema TH), Decisão sugerida, Fontes, O que NÃO fazer / NÃO incluir, O que é / O que faz, Plano de adoção recomendado, Risco principal (+5 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (13): Análise Fria: OmniRoute (Memória), code:block1 (## 2026-05-23 — OmniRoute (módulo de memória) rejeitado para), Comparação: Memória OmniRoute vs Sinapse Agent, Decisão sugerida, Fontes, O que NÃO fazer / NÃO incluir, O que podemos COPIAR do OmniRoute (sem adotar), O que é / O que faz (+5 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (13): Análise Fria: Synapse Layer, code:block1 (## 2026-05-23 — Synapse Layer rejeitado para o ecossistema T), Comparação: Synapse Layer vs Sinapse Agent, Decisão sugerida, Fontes, O que NÃO fazer / NÃO incluir, O que podemos COPIAR do Synapse Layer (sem adotar), O que é / O que faz (+5 more)
 
 ### Community 36 - "Community 36"
@@ -380,8 +414,8 @@ Cohesion: 0.20
 Nodes (11): ROOT_FILES, shouldSkipFile(), SKIP_PATH_SEGMENTS, validateContent(), validateFile(), base, hintList, HookInput (+3 more)
 
 ### Community 39 - "Community 39"
-Cohesion: 0.17
-Nodes (12): isMainModule(), backupDir, dest, formatTimestamp(), HookInput, input, listBackups(), pruneBackups() (+4 more)
+Cohesion: 0.15
+Nodes (13): isMainModule(), backupDir, dest, formatTimestamp(), HookInput, input, listBackups(), pruneBackups() (+5 more)
 
 ### Community 40 - "Community 40"
 Cohesion: 0.14
@@ -420,11 +454,11 @@ Cohesion: 0.17
 Nodes (10): Basic Callout, Callouts Reference, code:markdown (> [!note]), code:markdown (> [!faq]- Collapsed by default), code:markdown (> [!question] Outer callout), code:css (.callout[data-callout="custom-type"] {), Custom Callouts (CSS), Foldable Callouts (+2 more)
 
 ### Community 49 - "Community 49"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (9): Bugs latentes corrigidos durante o fechamento, Documentação, Métricas finais, Pendências resolvidas, PHASE-33 TTS Integration — Closeout Final, PHASE-33 TTS Integration — Closeout Final (2026-06-01), Próximas opportunities (PHASE-34 candidates), Referências cruzadas (+1 more)
 
 ### Community 50 - "Community 50"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (9): code:sql (-- TABELAS ESTRUTURAIS (ex-Graphify)), Esquema SQL Proposto (UMC Core), Fase 1: Fundação do Unified Memory Core (UMC), Fase 2: Motor de Busca Híbrido e MCP, Fase 3: Evolução do Obsidian (Interface), Fase 4: Estabilização e Deploy, Roadmap Completo: Unified Memory Core (UMC) e Obsidian, Roadmap: Unificação do Motor de Memória (UMC) e Evolução do Obsidian (+1 more)
 
 ### Community 51 - "Community 51"
@@ -452,7 +486,7 @@ Cohesion: 0.18
 Nodes (9): Agent Identity, Architect Mode, Ask Mode, Code Mode (default), Debug Mode, Memory Stack, Mode Behavior, Roo Code — Instructions (+1 more)
 
 ### Community 57 - "Community 57"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (8): Alternatives Considered, Consequences, Context, Decision, Decision: Síntese obsidian-mind + Zettelkasten + PARA, Rationale, Related, Reversibility
 
 ### Community 58 - "Community 58"
@@ -468,7 +502,7 @@ Cohesion: 0.20
 Nodes (8): code:block1 (/om-peer-scan <name> <github-username> <repo> [period]), code:block2 (gh pr list --repo <org>/<repo> --author <username> --state a), code:block3 (gh pr view <number> --repo <org>/<repo> --json body,reviews,), code:yaml (---), Important, Peer PR Deep Scan, Usage, Workflow
 
 ### Community 61 - "Community 61"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (8): Manager Timeline, People, People & Context, Performance Reviews, Recurring Growth Themes, Review Goals, Role & Org, Teams
 
 ### Community 62 - "Community 62"
@@ -484,7 +518,7 @@ Cohesion: 0.25
 Nodes (7): 1. Determine Current Quarter, 2. Read Current Brag State, 3. Scan for Uncaptured Wins, 4. Check Competency Coverage, 5. Evaluate Each Find, Output, Process
 
 ### Community 65 - "Community 65"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (7): code:python (# Exemplo de uso do Sinapse-MCP para uma consulta de código), **Conclusão:**, **Exemplo de Uso:**, **Funcionalidades Principais do Sinapse-MCP:**, **Implementação do Sinapse-MCP:**, **Integração com Sinapse-Memory:**, Sinapse-MCP: Unificado e Modular
 
 ### Community 66 - "Community 66"
@@ -504,11 +538,11 @@ Cohesion: 0.22
 Nodes (7): Competencies -- "How knowledge and skills were applied", Growth Plan, Impact -- "What was delivered?", Perf Review -- {{period}}, Principles -- "How delivery happened", Related, Summary
 
 ### Community 70 - "Community 70"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (6): Consequências, Contexto, Decisão, Decisão: Unificação do Motor de Memória (Unified Memory Core - UMC), Próximos Passos, Unified Memory Core Architecture Decision
 
 ### Community 71 - "Community 71"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (6): Atoms — Zettelkasten Notes, code:yaml (---), Exemplos de bons átomos, Exemplos de notas que DEVEM SER SPLIT, Regras, Template
 
 ### Community 72 - "Community 72"
@@ -560,7 +594,7 @@ Cohesion: 0.29
 Nodes (5): code:block1 (## Verified (X claims)), Input, Output, Process, Review Fact-Checker
 
 ### Community 84 - "Community 84"
-Cohesion: 0.29
+Cohesion: 0.25
 Nodes (5): Agent Loop Protocol, Erros e Falhas, Integração com o Vault, O Ciclo de Execução (The Loop), Regras de Ouro (Invioláveis)
 
 ### Community 86 - "Community 86"
@@ -584,11 +618,11 @@ Cohesion: 0.29
 Nodes (5): Definition, Growth Notes, Proficiency Levels, Related, {{title}}
 
 ### Community 91 - "Community 91"
-Cohesion: 0.33
+Cohesion: 0.29
 Nodes (4): Ação, Problema, Recomendação, Reindex Sinapse vault — DeepSeek saldo insuficiente
 
 ### Community 92 - "Community 92"
-Cohesion: 0.33
+Cohesion: 0.29
 Nodes (4): Always-On, Regras de Desambiguação, RESOLVER — Skill Dispatcher, Thinking Skills (GStack-inspired)
 
 ### Community 93 - "Community 93"
@@ -604,7 +638,7 @@ Cohesion: 0.50
 Nodes (3): code:yaml (---), Data Sources to Scan, Output
 
 ### Community 97 - "Community 97"
-Cohesion: 0.40
+Cohesion: 0.33
 Nodes (3): Gotchas — Conhecimento Duro, Hermes Agent, Instalação
 
 ### Community 98 - "Community 98"
@@ -676,12 +710,12 @@ Cohesion: 0.50
 Nodes (4): Decisions, Learnings, Session: 2026-05-24 22:37, Summary
 
 ### Community 115 - "Community 115"
-Cohesion: 0.40
+Cohesion: 0.33
 Nodes (3): Gotchas, Hermes Agent, Install
 
 ### Community 146 - "Community 146"
-Cohesion: 0.18
-Nodes (11): runScript(), hostPath(), RunResult, runScript(), path, runHook(), runHook(), runScript() (+3 more)
+Cohesion: 0.20
+Nodes (10): runScript(), hostPath(), RunResult, runScript(), runHook(), runHook(), runScript(), SCRIPT (+2 more)
 
 ### Community 147 - "Community 147"
 Cohesion: 0.18
@@ -716,7 +750,7 @@ Cohesion: 0.40
 Nodes (5): code:yaml (# CORRECT: Calculate days between dates), code:yaml (# Duration units: y/year/years, M/month/months, d/day/days,), Date Arithmetic, Duration Type, Key Functions
 
 ### Community 158 - "Community 158"
-Cohesion: 0.40
+Cohesion: 0.38
 Nodes (4): Current State, Last Update: 2026-05-24 22:37, Last Update: 2026-06-11 16:58, Last Update: 2026-06-11 21:07
 
 ### Community 159 - "Community 159"
@@ -768,45 +802,97 @@ Cohesion: 0.22
 Nodes (8): { code, stderr }, idx, projectFile, REQUIRED_SECTIONS, SCRIPT, SCRIPT_DIR, { stdout }, { stdout, stderr, code }
 
 ### Community 207 - "Community 207"
-Cohesion: 0.33
-Nodes (5): resolveVaultRoot(), invs, result, subcommands, [update, embed, tail]
+Cohesion: 0.40
+Nodes (4): 🧠 Consciência, Lobos, Projetos (lobo temporal — memória), Setores (diencéfalo — relay cross-projeto)
 
 ### Community 208 - "Community 208"
-Cohesion: 0.29
+Cohesion: 0.25
 Nodes (6): [project_fact] Arquitetura Hive-Mind: Foi decidido que o sistema de autenticação usaria Localhost Loopback para o Google para evitar erros de client type., [project_fact] Modelos Codex: O enxame deve priorizar modelos da família GPT-5 para tarefas de codificação pesada., Sessão Episódica: 2026-06-10 11:51, [test] Log de Teste: Minha chave secreta é [REDACTED_API_KEY], [user_preference] Estilo de Código: O usuário prefere que todos os scripts Python usem type hints e docstrings no estilo Google., [user_preference] Preferência de Editor: O usuário demonstrou preferência por usar Neovim para edições rápidas e VS Code para refatorações complexas.
 
 ### Community 209 - "Community 209"
-Cohesion: 0.40
+Cohesion: 0.33
 Nodes (4): [architecture] Hive-Mind Atlas: A taxonomia do Atlas Infinito é essencial para evitar o silo de informações cronológicas. Cada nó semântico agora mora em sua pasta., [failure_analysis] Erro de Polling OpenAI: Foi determinado que o erro deviceauth_authorization_pending requer um loop contínuo. A implementação atual trata isso com sucesso., [protocol] Segurança LLM: O Conselho exige auditoria 100% real de código. Modelos não devem supor nada sem testar na infraestrutura real., Sessão Episódica: 2026-06-10 12:25
 
 ### Community 210 - "Community 210"
-Cohesion: 0.40
+Cohesion: 0.33
 Nodes (4): [architecture] Hive-Mind Atlas: A taxonomia do Atlas Infinito é essencial para evitar o silo de informações cronológicas. Cada nó semântico agora mora em sua pasta., [failure_analysis] Erro de Polling OpenAI: Foi determinado que o erro deviceauth_authorization_pending requer um loop contínuo. A implementação atual trata isso com sucesso., [protocol] Segurança LLM: O Conselho exige auditoria 100% real de código. Modelos não devem supor nada sem testar na infraestrutura real., Sessão Episódica: 2026-06-10 12:35
 
 ### Community 211 - "Community 211"
-Cohesion: 0.40
+Cohesion: 0.33
 Nodes (4): [architecture] Hive-Mind Atlas: A taxonomia do Atlas Infinito é essencial para evitar o silo de informações cronológicas. Cada nó semântico agora mora em sua pasta., [failure_analysis] Erro de Polling OpenAI: Foi determinado que o erro deviceauth_authorization_pending requer um loop contínuo. A implementação atual trata isso com sucesso., [protocol] Segurança LLM: O Conselho exige auditoria 100% real de código. Modelos não devem supor nada sem testar na infraestrutura real., Sessão Episódica: 2026-06-10 12:50
 
 ### Community 212 - "Community 212"
-Cohesion: 0.40
+Cohesion: 0.33
 Nodes (4): [architecture] Hive-Mind Atlas: A taxonomia do Atlas Infinito é essencial para evitar o silo de informações cronológicas. Cada nó semântico agora mora em sua pasta., [failure_analysis] Erro de Polling OpenAI: Foi determinado que o erro deviceauth_authorization_pending requer um loop contínuo. A implementação atual trata isso com sucesso., [protocol] Segurança LLM: O Conselho exige auditoria 100% real de código. Modelos não devem supor nada sem testar na infraestrutura real., Sessão Episódica: 2026-06-10 15:30
 
+### Community 213 - "Community 213"
+Cohesion: 0.50
+Nodes (3): 🧠 Hive-Mind, Tópicos, Voltar
+
+### Community 217 - "Community 217"
+Cohesion: 0.40
+Nodes (3): MCP Decision, MCP Decision, MCP Decision
+
+### Community 227 - "Community 227"
+Cohesion: 0.07
+Nodes (27): Análise Fria: Manus Agent — 3 fases de adoção (2026-05-30), Aprendizado via API (2026-05-24), brain-first.md, builder-ethos.md, Cebolinha voice clone provider (2026-05-30), filing-rules.md, Go build tags pattern for TTS registry + filepath.ExpandUser fix + CacheKey on Result (2026-06-01), L1+L2 cache pattern (2026-06-01) (+19 more)
+
+### Community 236 - "Community 236"
+Cohesion: 0.12
+Nodes (16): Análise Fria: {{NOME DA FERRAMENTA}}, code:block1 (## {{DATA}} — {{TÍTULO RESUMIDO}}), Decisão sugerida, Fase 1 — *[nome]*, Fase 2 — *[nome]*, Fase 3 — *[nome]*, Fontes, O que NÃO fazer / NÃO incluir (+8 more)
+
+### Community 237 - "Community 237"
+Cohesion: 0.15
+Nodes (12): Active Projects, Archive, Completed, Current Quarter, Decisions Log, Incidents, Open Questions, Previous Quarters (+4 more)
+
+### Community 238 - "Community 238"
+Cohesion: 0.22
+Nodes (8): Alternatives Considered, Consequences, Context, Decision, Decision: {{title}}, Rationale, Related, Reversibility
+
+### Community 239 - "Community 239"
+Cohesion: 0.25
+Nodes (7): Competencies -- "How knowledge and skills were applied", Growth Plan, Impact -- "What was delivered?", Perf Review -- {{period}}, Principles -- "How delivery happened", Related, Summary
+
+### Community 240 - "Community 240"
+Cohesion: 0.29
+Nodes (6): Analysis, Conclusions, Feeds Into, Next Steps, Question / Problem, {{title}}
+
+### Community 241 - "Community 241"
+Cohesion: 0.29
+Nodes (6): Context, Decisions, Related, {{title}}, What, Why
+
+### Community 242 - "Community 242"
+Cohesion: 0.33
+Nodes (5): code:text (The text in the image is not clear enough to transcribe accu), Descrição, Memória Visual: CAP-20260610-195656-test-capture, OCR (Texto Extraído), Tópicos Inferidos
+
+### Community 243 - "Community 243"
+Cohesion: 0.33
+Nodes (5): code:text (The image quality does not allow for Optical Character Recog), Descrição, Memória Visual: CAP-20260610-195934-MCP-Test-Capture, OCR (Texto Extraído), Tópicos Inferidos
+
+### Community 244 - "Community 244"
+Cohesion: 0.33
+Nodes (5): Definition, Growth Notes, Proficiency Levels, Related, {{title}}
+
+### Community 245 - "Community 245"
+Cohesion: 0.40
+Nodes (4): How This Works, Linking Convention, Thinking Space, When to Use
+
 ## Knowledge Gaps
-- **1047 isolated node(s):** `MCP Pattern (2026-06-17)`, `MCP Decision`, `MCP Decision`, `MCP Decision`, `brain/North Star.md` (+1042 more)
+- **1149 isolated node(s):** `brain/North Star.md`, `brain/Memories.md`, `brain/Key Decisions.md`, `brain/Patterns.md`, `brain/Gotchas.md` (+1144 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **44 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **65 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `escapeRegex()` connect `Community 5` to `Community 201`, `Community 2`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **Why does `Current State` connect `Community 158` to `Community 192`, `Community 197`, `Community 72`, `Community 73`, `Community 98`, `Community 99`, `Community 100`, `Community 101`, `Community 102`, `Community 103`, `Community 104`, `Community 105`, `Community 106`, `Community 107`, `Community 108`, `Community 109`, `Community 110`, `Community 111`, `Community 112`, `Community 113`, `Community 114`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
 - **Why does `runScript()` connect `Community 146` to `Community 152`, `Community 156`, `Community 206`, `Community 6`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **What connects `MCP Pattern (2026-06-17)`, `MCP Decision`, `MCP Decision` to the rest of the system?**
-  _1051 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **Why does `resolveQmdEntry()` connect `Community 1` to `Community 152`, `Community 2`, `Community 14`?**
+  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **Why does `debug()` connect `Community 14` to `Community 1`, `Community 37`, `Community 38`, `Community 39`?**
+  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **What connects `brain/North Star.md`, `brain/Memories.md`, `brain/Key Decisions.md` to the rest of the system?**
+  _1153 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.13725490196078433 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
