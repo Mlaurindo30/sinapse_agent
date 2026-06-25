@@ -7,7 +7,7 @@ topic: atlas
 # atlas — Hive-Mind
 
 <!-- auto:gerado por generate_mocs.py — não editar à mão -->
-> MOC do tópico · 7 neurônio(s).
+> MOC do tópico · 9 neurônio(s).
 
 ## Neurônios
 - [[neuronio-143ac7f7a8a154e6|Decisão 2]]
@@ -17,3 +17,5 @@ topic: atlas
 - [[neuronio-6f09cf535832af29|Mermaid Extraction from Documentation]]
 - [[neuronio-0cfcb03520db8d9d|Mermaid Validation Failure]]
 - [[neuronio-6c778da7e661cbb9|Taxonomia do Atlas Infinito]]
+- [[atlas|atlas — Hive-Mind]]
+- [[atlas_1|atlas_1]]

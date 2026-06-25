@@ -1,4 +1,4 @@
-## Last Update: 2026-06-11 21:07
+## Last Update: 2026-06-25 09:55
 
 ---
 tags: [memory, current-state]
@@ -280,3 +280,11 @@ Push dos 10 commits locais para o repositório origin/main após auditoria e tes
 - Nenhum aprendizado registrado
 ### Summary
 Corrigido erro de shape no modelo Ideogram 4 através de detecção dinâmica da dimensão llm_features_dim e ajuste na precedência de configuração de modelos no ComfyUI.
+
+
+## Session: 2026-06-25 09:55
+
+### Decisions
+- Nenhuma decisão registrada### Learnings
+- Nenhum aprendizado registrado### Summary
+Revisão arquitetural do roadmap reescrito pelo Kilo (Claude + 2 subagentes, verificado vs código). Acordo 5/5 com Kilo via CLI; 5 correções aplicadas (DuckDB 9→4 queries, fases 6→7, line numbers, testes 466→534, §2.6 5→7 read-backends + RTK reclassificado, tools→13, P5 re-escopado). Kilo aplicou ~70% (limitou em contexto 256k), meus 2 subagentes fecharam o resto. Commit 9ea63d6 nos 3 docs (roadmap, AGENTS.md, 01-architecture.md).

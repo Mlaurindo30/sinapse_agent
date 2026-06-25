@@ -7,7 +7,7 @@ topic: atoms
 # atoms — Hive-Mind
 
 <!-- auto:gerado por generate_mocs.py — não editar à mão -->
-> MOC do tópico · 12 neurônio(s).
+> MOC do tópico · 15 neurônio(s).
 
 ## Neurônios
 - [[Agent-Loop-Protocol|Agent Loop Protocol]]
@@ -22,3 +22,6 @@ topic: atoms
 - [[neuronio-7ce327bb5ac09ef7|Unique Pattern]]
 - [[neuronio-cc3587b586f888a6|Unique Pattern Insight]]
 - [[neuronio-c69a6ffbaa43d7c6|Unique Pattern Insight]]
+- [[agents_|agents_]]
+- [[atoms|atoms — Hive-Mind]]
+- [[atoms_|atoms_]]
