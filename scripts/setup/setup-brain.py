@@ -185,6 +185,11 @@ def is_provider_configured(p_name: str, env: Dict[str, str]) -> bool:
     # antigravity / gemini-cli: configurado = existe o login OAuth do CLI no disco.
     if "gemini_cli_oauth" in cfg["auth_type"]:
         return gemini_cli_oauth_file() is not None
+    # antigravity-cli (`agy`): configurado = binário presente + mesmo OAuth de ~/.gemini.
+    if "agy_cli" in cfg["auth_type"]:
+        from pathlib import Path as _P
+        return _P(os.environ.get("AGY_BIN", str(_P.home() / ".local/bin/agy"))).exists() \
+            and gemini_cli_oauth_file() is not None
     if "oauth" in cfg["auth_type"]:
         if f"{p_name.upper()}_ACCESS_TOKEN" in env: return True
     if cfg['env_var'] in env or "local" in cfg['auth_type']:
@@ -237,12 +242,21 @@ def provider_menu(role: str, level: int = 0):
         print(line("-"))
 
     print(f"\n{BOLD}Provedores Disponíveis:{NC}")
-    providers = list(PROVIDERS_CONFIG.keys())
+    # 'google' (API key/OAuth Generative Language) está aposentado: o token OAuth
+    # não renova mais de forma confiável e a key direta foi descontinuada no setup.
+    # O acesso Gemini é feito via gemini-cli/antigravity (CLI OAuth). Ocultado do
+    # menu para não ser oferecido/configurado; o code path permanece por compat.
+    _HIDDEN_PROVIDERS = {"google"}
+    providers = [p for p in PROVIDERS_CONFIG.keys() if p not in _HIDDEN_PROVIDERS]
     print(f"{BOLD}{fit('#', 4)} {fit('Provider', 16)} {fit('Auth', 18)} {fit('Status', 24)} {fit('Observacao', 36)}{NC}")
     print(line("-"))
     for i, p in enumerate(providers):
         cfg = PROVIDERS_CONFIG[p]
-        if "gemini_cli_oauth" in cfg["auth_type"]:
+        if "agy_cli" in cfg["auth_type"]:
+            auth = "agy CLI"
+            status = f"{GREEN}configurado{NC}" if is_provider_configured(p, env) else f"{YELLOW}pendente{NC}"
+            note = "subprocess agy (claude/gpt-oss)"
+        elif "gemini_cli_oauth" in cfg["auth_type"]:
             auth = "CLI OAuth"
             status = f"{GREEN}configurado{NC}" if is_provider_configured(p, env) else f"{YELLOW}pendente{NC}"
             note = "login externo"
@@ -322,6 +336,19 @@ def validate_provider_real(p_name: str, model: str | None = None) -> Dict[str, s
         return {"status": status, "detail": detail, "source": source, "elapsed": f"{elapsed_ms}ms"}
 
     try:
+        if "agy_cli" in cfg["auth_type"]:
+            from core.agy_client import call_agy_structured
+
+            test_model = model or (cfg.get("models_hint") or ["gemini-3.5-flash"])[0]
+            out = call_agy_structured(
+                "Responda apenas JSON valido: {\"ok\": true}",
+                "Validacao operacional minima do Hive-Mind.",
+                _SetupBrainPing,
+                model=test_model,
+                provider=p_name,
+            )
+            return done("OK" if out.ok else "ERRO", f"geracao real (agy) em {test_model}", provider_source_label(p_name, load_env()))
+
         if "gemini_cli_oauth" in cfg["auth_type"]:
             from core.gemini_cli_client import call_gemini_cli_structured
 
