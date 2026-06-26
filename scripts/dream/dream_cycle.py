@@ -48,6 +48,9 @@ PROMPTS_DIR = SCHEMAS_DIR / "prompts"
 MAX_CYCLE_SECONDS = int(os.environ.get("HIVE_MAX_CYCLE_SECONDS", "600"))
 MAX_AMBIGUITIES = int(os.environ.get("HIVE_MAX_AMBIGUITIES", "50"))
 MAX_OBS_PER_CYCLE = int(os.environ.get("HIVE_MAX_OBS_PER_CYCLE", "30"))
+# Distiller+Validator de cada projeto são independentes e I/O-bound (HTTP ao LLM),
+# então rodamos os projetos em paralelo. 1 desabilita (volta ao modo série).
+DISTILL_WORKERS = int(os.environ.get("HIVE_DREAM_DISTILL_WORKERS", "4"))
 
 
 def fetch_balanced_observations(conn, limit: int = MAX_OBS_PER_CYCLE) -> list:
@@ -700,29 +703,55 @@ def _run_dream_cycle_inner() -> Dict[str, int]:
     project_errors: List[str] = []   # F4.0: projetos que ERRARAM (LLM/DB) — isolados
 
     with span("dream.distill", {"obs_count": len(obs), "projects": len(project_buckets)}):
-        for proj, proj_obs in project_buckets.items():
-            proj_ids = [o["id"] for o in proj_obs]
+        # Cada projeto é independente e o distill+validate é I/O-bound (HTTP ao
+        # LLM), então rodamos os projetos EM PARALELO — antes era série: 2 chamadas
+        # LLM × N projetos somavam latência (o gargalo do ciclo). As chamadas LLM
+        # ficam nas threads; TODA escrita no SQLite (`_mark_observations`, que usa
+        # a `conn` compartilhada NÃO thread-safe) acontece depois, na thread main.
+        def _distill_one(proj: str, proj_obs: list) -> tuple:
+            """Puro: só LLM + hashing, sem tocar no DB. Nunca levanta."""
             try:
-                proj_logs = "\n".join(f"- [{o['type']}] {o['title']}: {o['content']}" for o in proj_obs)
+                proj_logs = "\n".join(
+                    f"- [{o['type']}] {o['title']}: {o['content']}" for o in proj_obs)
                 print(f"  [Distiller] Projeto '{proj}': processando {len(proj_obs)} observações...")
                 distilled, distill_status = agent_distill_and_validate(proj_logs)
-                if distill_status == "failed":
-                    _mark_observations(2, proj_ids)
-                    distill_failures.append(proj)
-                    print(f"  [Pipeline] Projeto '{proj}': {len(proj_ids)} obs em quarentena.")
-                elif distill_status == "empty" or not distilled or not distilled.facts:
-                    _mark_observations(1, proj_ids)
-                    distill_empties.append(proj)
-                    print(f"  [Distiller] Projeto '{proj}': sem fatos extraídos.")
-                else:
-                    distilled_by_project[proj] = distilled
-            except Exception as e:
-                # F4.0 resiliência: erro (LLM/`database is locked`/etc.) num projeto NÃO
-                # aborta o ciclo. Obs ficam archived=0 (reprocessa no próximo ciclo) —
-                # não quarentena, pois é erro transitório, não dado ruim.
+                return (distilled, distill_status, None)
+            except Exception as e:  # noqa: BLE001 — isolamento por projeto (F4.0)
+                return (None, "error", e)
+
+        results: Dict[str, tuple] = {}
+        if len(project_buckets) <= 1 or DISTILL_WORKERS <= 1:
+            for proj, proj_obs in project_buckets.items():
+                results[proj] = _distill_one(proj, proj_obs)
+        else:
+            from concurrent.futures import ThreadPoolExecutor, as_completed
+            workers = min(DISTILL_WORKERS, len(project_buckets))
+            with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="distill") as pool:
+                futs = {pool.submit(_distill_one, proj, proj_obs): proj
+                        for proj, proj_obs in project_buckets.items()}
+                for fut in as_completed(futs):
+                    results[futs[fut]] = fut.result()
+
+        # Efeitos colaterais no DB: sequenciais, na thread main (conn não-threadsafe).
+        for proj, proj_obs in project_buckets.items():
+            proj_ids = [o["id"] for o in proj_obs]
+            distilled, distill_status, err = results[proj]
+            if distill_status == "error":
+                # F4.0 resiliência: erro (LLM/`database is locked`/etc.) num projeto
+                # NÃO aborta o ciclo. Obs ficam archived=0 (reprocessa no próximo
+                # ciclo) — não quarentena, pois é erro transitório, não dado ruim.
                 project_errors.append(proj)
-                print(f"  [Resiliência] Projeto '{proj}' falhou no distill: {e}. Obs preservadas p/ reprocessar.")
-                continue
+                print(f"  [Resiliência] Projeto '{proj}' falhou no distill: {err}. Obs preservadas p/ reprocessar.")
+            elif distill_status == "failed":
+                _mark_observations(2, proj_ids)
+                distill_failures.append(proj)
+                print(f"  [Pipeline] Projeto '{proj}': {len(proj_ids)} obs em quarentena.")
+            elif distill_status == "empty" or not distilled or not distilled.facts:
+                _mark_observations(1, proj_ids)
+                distill_empties.append(proj)
+                print(f"  [Distiller] Projeto '{proj}': sem fatos extraídos.")
+            else:
+                distilled_by_project[proj] = distilled
     mark_stage("distill_validate_ms", distill_t0)
 
     if not distilled_by_project:
