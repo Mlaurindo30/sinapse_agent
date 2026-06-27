@@ -515,6 +515,46 @@ source_image: {img_path.name}
 # Fluxo Principal (Main Loop)
 # ---------------------------------------------------------------------------
 
+def _push_neurons_to_graphs(neurons: "list[tuple[str, str]]") -> None:
+    """Estágio 3.5 (P2+P4): empurra neurônios persistidos para os grafos de
+    conhecimento — Graphiti (temporal/causal) e LightRAG (entidades/relações).
+
+    Best-effort: qualquer falha é engolida e nunca aborta o Dream Cycle. Antes,
+    este push só ocorria para ambiguidades sintetizadas (raras em uso
+    single-machine), deixando ambos os grafos permanentemente vazios e as tools
+    sinapse_rag_query / sinapse_temporal_graph_search sem dados.
+    """
+    if not neurons:
+        return
+    # Graphiti: 1 episódio por neurônio (escrita leve no FalkorDB).
+    try:
+        from integrations.graphiti import push_neuron
+        for nid, content in neurons:
+            try:
+                push_neuron(nid, content, source="dream")
+            except Exception:
+                pass
+    except ImportError:
+        pass
+    # LightRAG: extração de entidades/relações (chamada LLM). Indexa todos os
+    # neurônios dentro de UM único event loop — evita o custo (e os bugs de
+    # "event loop is closed") de um asyncio.run por neurônio.
+    try:
+        from core.lightrag_index import index_memory
+
+        async def _index_all():
+            for nid, content in neurons:
+                await index_memory(
+                    content, metadata={"neuron_id": nid, "source": "dream_cycle"}
+                )
+
+        asyncio.run(_index_all())
+    except ImportError:
+        pass
+    except Exception as e:
+        print(f"  [LightRAG] index em lote ignorado (best-effort): {e}")
+
+
 def _route_and_persist_project(conn, now, proj, distilled, proj_obs_ids, mark_obs) -> int:
     """Roteia + persiste os fatos de UM projeto (neurônios .md + tabela neurons).
 
@@ -530,6 +570,7 @@ def _route_and_persist_project(conn, now, proj, distilled, proj_obs_ids, mark_ob
 
     persisted = 0
     first_nid: str | None = None
+    pushed: "list[tuple[str, str]]" = []
     fact_map = {f.id: f for f in distilled.facts}
     for r in routed.routed_facts:
         fact = fact_map.get(r.fact_id)
@@ -591,6 +632,7 @@ source: hive-dreamer
 
         print(f"  [+] Neurônio {r.action}: {proj}/{safe_topic}/{nid}.md")
         persisted += 1
+        pushed.append((nid, fact.content))
         if first_nid is None:
             first_nid = nid
 
@@ -606,6 +648,11 @@ source: hive-dreamer
 
     # Obs do projeto consolidadas só após persistência bem-sucedida.
     mark_obs(1, proj_obs_ids)
+
+    # Estágio 3.5 (P2+P4): empurra os neurônios persistidos para os grafos de
+    # conhecimento. Antes só ocorria na síntese de ambiguidades (raras), o que
+    # mantinha LightRAG/Graphiti vazios. Best-effort — nunca aborta o ciclo.
+    _push_neurons_to_graphs(pushed)
     return persisted
 
 

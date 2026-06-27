@@ -37,8 +37,28 @@ from pathlib import Path
 from typing import Any
 
 _graphiti: Any = None
+_event_loop: Any = None
 _circuit_open_until: float = 0.0
 _consecutive_failures: int = 0
+
+
+def _run_async(coro_factory):
+    """Roda uma corrotina num event loop dedicado e *persistente*.
+
+    Graphiti/FalkorDriver mantém conexões vinculadas ao event loop em que o
+    cliente foi criado. `asyncio.run()` cria E FECHA um loop a cada chamada —
+    então a partir da 2ª chamada no mesmo processo o driver cacheado aponta
+    para um loop fechado ("Event loop is closed"). Isso é exatamente o que
+    acontece quando o Dream Cycle empurra vários neurônios em sequência.
+
+    Mantemos um único loop reutilizado; se ele tiver sido fechado, recriamos e
+    invalidamos o cliente cacheado (que estava preso ao loop antigo).
+    """
+    global _event_loop, _graphiti
+    if _event_loop is None or _event_loop.is_closed():
+        _event_loop = asyncio.new_event_loop()
+        _graphiti = None  # cliente vinculado ao loop anterior é inválido
+    return _event_loop.run_until_complete(coro_factory())
 
 
 # ---------------------------------------------------------------------------
@@ -401,7 +421,7 @@ def push_neuron(neuron_id: str, content: str, source: str = "dream") -> bool:
             group_id="hive-mind",
         )
 
-    success, error = _retry_with_backoff(lambda: asyncio.run(_do_push()))
+    success, error = _retry_with_backoff(lambda: _run_async(_do_push))
     if not success:
         # FalkorDB disponível mas falhou — escreve no fallback
         # para não perder o neurônio.
@@ -441,7 +461,7 @@ def search_graph(query: str, num_results: int = 10) -> list[dict]:
             num_results=num_results,
         )
 
-    success, edges = _retry_with_backoff(lambda: asyncio.run(_do_search()))
+    success, edges = _retry_with_backoff(lambda: _run_async(_do_search))
     if not success or edges is None:
         return []
     return [
