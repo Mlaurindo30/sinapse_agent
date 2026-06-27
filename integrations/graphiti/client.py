@@ -246,10 +246,28 @@ def circuit_state() -> dict:
 # Retry com backoff
 # ---------------------------------------------------------------------------
 
+def _is_transient(error: Exception) -> bool:
+    """Decide se vale retentar. Erros DETERMINÍSTICOS (NaN no embed/LLM,
+    validação, schema) devolvem o mesmo resultado em cada tentativa — retentar
+    só desperdiça o backoff (1+2+4s por neurônio). Isso era a causa do Dream
+    Cycle levar ~25min: cada push que dava "json: unsupported value: NaN" do
+    Ollama gastava 7s antes de cair no fallback. Só retentamos falhas
+    plausivelmente transitórias (rede, timeout, conexão)."""
+    msg = str(error).lower()
+    nonretryable = (
+        "unsupported value: nan",
+        "json: unsupported value",
+        "validationerror",
+        "invalid schema",
+    )
+    return not any(s in msg for s in nonretryable)
+
+
 def _retry_with_backoff(fn, *args, **kwargs):
     """Roda `fn(*args, **kwargs)` com N tentativas e backoff 1s, 2s, 4s.
 
-    Retorna (success, result_or_none). Atualiza o circuit breaker.
+    Retorna (success, result_or_none). Atualiza o circuit breaker. Erros
+    não-transitórios (ver _is_transient) falham imediatamente, sem backoff.
     """
     retries = _cfg_int("HIVE_GRAPHITI_RETRIES", 3)
     last_error: Exception | None = None
@@ -260,6 +278,9 @@ def _retry_with_backoff(fn, *args, **kwargs):
             return True, result
         except Exception as e:
             last_error = e
+            if not _is_transient(e):
+                print(f"  [graphiti] erro não-transitório (sem retry): {e}")
+                break
             wait = 2 ** attempt  # 1s, 2s, 4s
             print(
                 f"  [graphiti] tentativa {attempt + 1}/{retries} falhou: {e} "
