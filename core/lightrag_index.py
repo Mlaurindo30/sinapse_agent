@@ -67,8 +67,12 @@ def get_rag():
                 vectors = await loop.run_in_executor(None, lambda: list(_embedder.embed(texts)))
                 return np.array(vectors, dtype=np.float32)
 
-            # Schema estruturado compatível com LightRAG v1.5.4.
-            # Modelos locais menores via Ollama OpenAI endpoint.
+            # Schema estruturado compatível com LightRAG v1.5.4. Os NOMES DE
+            # CAMPO precisam casar com o parser do LightRAG (operate.py): ele lê
+            # entity_data.get("name"/"type"/"description") e rel_data.get(
+            # "source"/"target"/"keywords"/"description"). Usar entity_name/
+            # entity_type/etc. fazia o parser ler "" → "Empty entity name after
+            # sanitization" → descartava TODAS as entidades (0 persistidas).
             _EXTRACTION_JSON_SCHEMA = {
                 "type": "object",
                 "properties": {
@@ -77,11 +81,11 @@ def get_rag():
                         "items": {
                             "type": "object",
                             "properties": {
-                                "entity_name": {"type": "string"},
-                                "entity_type": {"type": "string"},
-                                "entity_description": {"type": "string"},
+                                "name": {"type": "string"},
+                                "type": {"type": "string"},
+                                "description": {"type": "string"},
                             },
-                            "required": ["entity_name", "entity_type", "entity_description"],
+                            "required": ["name", "type", "description"],
                         },
                     },
                     "relationships": {
@@ -89,16 +93,16 @@ def get_rag():
                         "items": {
                             "type": "object",
                             "properties": {
-                                "source_entity": {"type": "string"},
-                                "target_entity": {"type": "string"},
-                                "relationship_keywords": {"type": "string"},
-                                "relationship_description": {"type": "string"},
+                                "source": {"type": "string"},
+                                "target": {"type": "string"},
+                                "keywords": {"type": "string"},
+                                "description": {"type": "string"},
                             },
                             "required": [
-                                "source_entity",
-                                "target_entity",
-                                "relationship_keywords",
-                                "relationship_description",
+                                "source",
+                                "target",
+                                "keywords",
+                                "description",
                             ],
                         },
                     },
@@ -114,7 +118,7 @@ def get_rag():
                 """
                 import json as _json
                 messages = [
-                    {"role": "system", "content": "You are a Knowledge Graph Specialist responsible for extracting entities and relationships from the input text. For each entity, extract: entity_name, entity_type (category like Technology, Organization, Concept, Person, or Other), and entity_description. For each relationship, extract: source_entity, target_entity, relationship_keywords (comma-separated), and relationship_description. Always include all fields."},
+                    {"role": "system", "content": "You are a Knowledge Graph Specialist responsible for extracting entities and relationships from the input text. For each entity, extract: name, type (category like Technology, Organization, Concept, Person, or Other), and description. For each relationship, extract: source, target, keywords (comma-separated), and description. Use exactly these field names. Always include all fields. Only extract entities and relationships explicitly present in the input text; never invent unrelated examples."},
                     {"role": "user", "content": prompt},
                 ]
                 payload: dict = {
