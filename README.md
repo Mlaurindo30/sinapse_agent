@@ -106,6 +106,10 @@ Tools disponíveis:
 
 ## Anatomia do Cérebro
 
+![Anatomia do cérebro Hive-Mind](docs/assets/image/brain-anatomy.png)
+*Representação visual dos 4 lobos (Córtex, Cerebelo, Diencéfalo, Tronco) e 5 lóbulos do Córtex*
+
+
 O Hive-Mind é organizado como um cérebro. O vault `cerebro/` espelha a anatomia — **quatro lobos irmãos sob a Consciência**, e o Córtex tem **cinco lóbulos próprios**.
 
 ```
@@ -149,6 +153,10 @@ As ferramentas externas são **órgãos do cérebro**, não bancos paralelos: Gr
 ---
 
 ## Visão Geral da Arquitetura
+
+
+![Diagrama de arquitetura do Hive-Mind](docs/assets/image/architecture-diagram.png)
+*Fonte: architecture-diagram.png*
 
 ```
   ┌────────────────────────────────────────────────────────────────┐
@@ -251,6 +259,10 @@ As ferramentas externas são **órgãos do cérebro**, não bancos paralelos: Gr
 ---
 
 ## O Ciclo de Sonho (Hive-Dreamer)
+
+
+![O Ciclo de Sonho](docs/assets/image/Dreamer.png)
+*Fonte: Dreamer.png*
 
 Consolidação offline: o que o agente vive durante o dia (observações brutas) é transformado em conhecimento estruturado e legível.
 
@@ -501,6 +513,10 @@ cloud:
                                        merge                    branch
                                    (complemento)          (contradição)
 ```
+
+
+![Sincronização P2P](docs/assets/image/sincronizacao_P2P.png)
+*Fonte: sincronizacao_P2P.png*
 
 - UUIDs v4 em todas as PKs — sem colisão entre máquinas
 - SHA-256 de conteúdo em `neurons.hash` — detecção determinística
