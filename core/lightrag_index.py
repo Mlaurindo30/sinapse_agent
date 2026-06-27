@@ -22,12 +22,11 @@ _WORKING_DIR = str(
 )
 
 # Modelo de chat local padrão para o LightRAG (não depende de Gemini/quota remota).
-# Pode ser sobrescrito por HIVE_LIGHTRAG_MODEL no .env.
-# Modelo de chat do LightRAG. Fixo em granite3-dense:2b por design:
-# roda em qualquer máquina (≤2GB RAM) e é especializado em RAG/extração de
-# entidades. Não há fallback nem UI para trocar —.env continua sobrescrevendo
-# apenas para debug/dev. O download está no install.sh.
-_LIGHTRAG_CHAT_MODEL = os.environ.get("HIVE_LIGHTRAG_MODEL", "granite3-dense:2b")
+# Configurável via setupbrain (role "lightrag" → HIVE_LIGHTRAG_MODEL).
+# Default qwen2.5:3b: prosa multilíngue (PT/EN), extrai entidades/relações bem
+# melhor que granite3-dense:2b (que alucinava), pequeno (~1.9GB) p/ coexistir na
+# GPU com bge-m3 e os demais modelos locais. Download no install.sh.
+_LIGHTRAG_CHAT_MODEL = os.environ.get("HIVE_LIGHTRAG_MODEL", "qwen2.5:3b")
 _LIGHTRAG_CHAT_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434/v1/chat/completions")
 
 

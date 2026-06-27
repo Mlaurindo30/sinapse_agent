@@ -13,9 +13,9 @@ Config (env vars):
   FALKORDB_PASSWORD    — default: (empty)
   FALKORDB_DB          — default: sinapse
   GRAPHITI_LLM_BASE    — default: http://localhost:11434/v1
-  GRAPHITI_LLM_MODEL   — default: granite3-dense:2b (modelo de PROSA pequeno p/
-                         extração; coexiste na GPU com o Dreamer 8b + bge-m3 sem
-                         OOM. Deve existir no Ollama)
+  HIVE_GRAPHITI_MODEL  — modelo de extração (role no setupbrain). Default:
+                         qwen2.5:3b (prosa multilíngue, ~1.9GB, coexiste na GPU).
+                         GRAPHITI_LLM_MODEL é alias legado e tem precedência.
   GRAPHITI_EMBED_MODEL — default: bge-m3:latest (deve existir no Ollama)
   HIVE_GRAPHITI_RETRIES    — default: 3 (tentativas com backoff 1s, 2s, 4s)
   HIVE_GRAPHITI_CB_FAILS   — default: 3 (falhas consecutivas que abrem o circuit)
@@ -93,16 +93,20 @@ def _ollama_root() -> str:
 
 
 def _llm_model() -> str:
-    # Default: modelo de PROSA PEQUENO (~1.6GB). Dois critérios:
-    #   1) Prosa, não código: qwen2.5-coder:3b (código) extraía entidades vazias
-    #      e gerava embeddings NaN. granite3-dense extrai prosa corretamente.
-    #   2) Pequeno para COEXISTIR na GPU: durante o Dream Cycle o modelo do
-    #      Dreamer (8b, ~6GB) + bge-m3 (~1.2GB) já ocupam a GPU; um 3º modelo 8b
-    #      (~5GB) estoura uma GPU de 12GB → OOM → embeddings NaN sob carga.
-    #      granite3-dense:2b cabe junto (6.2+1.6+1.2 ≈ 9GB < 12GB).
-    # Verificado: extrai entidades (Entity nodes crescem) e search_graph retorna
-    # edges reais, sem NaN, durante a execução do ciclo.
-    return os.environ.get("GRAPHITI_LLM_MODEL", "granite3-dense:2b")
+    # Default: modelo de PROSA PEQUENO e MULTILÍNGUE (PT/EN). Dois critérios:
+    #   1) Prosa + multilíngue: qwen2.5:3b extrai entidades/relações de texto
+    #      natural muito melhor que granite3-dense:2b (que alucinava no gleaning)
+    #      e que qwen2.5-coder:3b (modelo de código, gerava entidades vazias/NaN).
+    #   2) Pequeno para COEXISTIR na GPU: no Dream Cycle, modelos locais (ex.
+    #      claude_mem 8b ~6GB) + bge-m3 (~1.2GB) já ocupam a GPU de 12GB; um 3º
+    #      modelo grande estoura → OOM → embeddings NaN. qwen2.5:3b (~1.9GB) cabe.
+    # Configurável via setupbrain (HIVE_GRAPHITI_MODEL) — ex.: qwen2.5:7b em
+    # máquinas com mais VRAM. GRAPHITI_LLM_MODEL é mantido como alias legado.
+    return (
+        os.environ.get("GRAPHITI_LLM_MODEL")
+        or os.environ.get("HIVE_GRAPHITI_MODEL")
+        or "qwen2.5:3b"
+    )
 
 
 def _embed_model() -> str:
