@@ -13,8 +13,9 @@ Config (env vars):
   FALKORDB_PASSWORD    — default: (empty)
   FALKORDB_DB          — default: sinapse
   GRAPHITI_LLM_BASE    — default: http://localhost:11434/v1
-  GRAPHITI_LLM_MODEL   — default: granite3-dense:8b (modelo de PROSA p/ extração
-                         de entidades; deve existir no Ollama)
+  GRAPHITI_LLM_MODEL   — default: granite3-dense:2b (modelo de PROSA pequeno p/
+                         extração; coexiste na GPU com o Dreamer 8b + bge-m3 sem
+                         OOM. Deve existir no Ollama)
   GRAPHITI_EMBED_MODEL — default: bge-m3:latest (deve existir no Ollama)
   HIVE_GRAPHITI_RETRIES    — default: 3 (tentativas com backoff 1s, 2s, 4s)
   HIVE_GRAPHITI_CB_FAILS   — default: 3 (falhas consecutivas que abrem o circuit)
@@ -92,12 +93,16 @@ def _ollama_root() -> str:
 
 
 def _llm_model() -> str:
-    # Default é um modelo de PROSA (não de código): a extração de entidades do
-    # Graphiti opera sobre texto natural. qwen2.5-coder:3b (modelo de código)
-    # produzia entidades vazias + embeddings NaN ("entity not found for edge
-    # relation" / "json: unsupported value: NaN"), deixando a busca por edges
-    # vazia. granite3-dense:8b extrai entidades/relações corretamente.
-    return os.environ.get("GRAPHITI_LLM_MODEL", "granite3-dense:8b")
+    # Default: modelo de PROSA PEQUENO (~1.6GB). Dois critérios:
+    #   1) Prosa, não código: qwen2.5-coder:3b (código) extraía entidades vazias
+    #      e gerava embeddings NaN. granite3-dense extrai prosa corretamente.
+    #   2) Pequeno para COEXISTIR na GPU: durante o Dream Cycle o modelo do
+    #      Dreamer (8b, ~6GB) + bge-m3 (~1.2GB) já ocupam a GPU; um 3º modelo 8b
+    #      (~5GB) estoura uma GPU de 12GB → OOM → embeddings NaN sob carga.
+    #      granite3-dense:2b cabe junto (6.2+1.6+1.2 ≈ 9GB < 12GB).
+    # Verificado: extrai entidades (Entity nodes crescem) e search_graph retorna
+    # edges reais, sem NaN, durante a execução do ciclo.
+    return os.environ.get("GRAPHITI_LLM_MODEL", "granite3-dense:2b")
 
 
 def _embed_model() -> str:
