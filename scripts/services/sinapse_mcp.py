@@ -336,14 +336,8 @@ def _rag_query(question: str, mode: str = "hybrid") -> dict:
     LightRAG não estiver disponível (ImportError, sem LLM configurado, etc.).
     """
     try:
-        import asyncio
-        from core.lightrag_index import query_rag
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-        result = loop.run_until_complete(query_rag(question, mode=mode))
+        from core.lightrag_index import query_rag_sync
+        result = query_rag_sync(question, mode=mode)
         return {"result": result or "(LightRAG indisponível ou sem resultado)"}
     except Exception as e:
         return {"result": f"(LightRAG erro: {e})"}

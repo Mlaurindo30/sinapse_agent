@@ -380,11 +380,11 @@ def run_synthesis_cycle(deadline: Optional[float] = None):
                 # P4: index synthesized neuron into LightRAG knowledge graph (best-effort).
                 # Alimenta o sinapse_rag_query via MCP. Falha nunca aborta a síntese.
                 try:
-                    from core.lightrag_index import index_memory
-                    asyncio.run(index_memory(
+                    from core.lightrag_index import index_memory_sync
+                    index_memory_sync(
                         synthesis.final_content,
                         metadata={"neuron_id": neuron_id, "source": "dream_cycle"},
-                    ))
+                    )
                 except ImportError:
                     pass
                 except Exception as e:
@@ -536,19 +536,14 @@ def _push_neurons_to_graphs(neurons: "list[tuple[str, str]]") -> None:
                 pass
     except ImportError:
         pass
-    # LightRAG: extração de entidades/relações (chamada LLM). Indexa todos os
-    # neurônios dentro de UM único event loop — evita o custo (e os bugs de
-    # "event loop is closed") de um asyncio.run por neurônio.
+    # LightRAG: extração de entidades/relações (chamada LLM). index_memory_sync
+    # roda no event loop dedicado e persistente do LightRAG — evita os bugs de
+    # "bound to a different event loop" do singleton entre chamadas.
     try:
-        from core.lightrag_index import index_memory
+        from core.lightrag_index import index_memory_sync
 
-        async def _index_all():
-            for nid, content in neurons:
-                await index_memory(
-                    content, metadata={"neuron_id": nid, "source": "dream_cycle"}
-                )
-
-        asyncio.run(_index_all())
+        for nid, content in neurons:
+            index_memory_sync(content, metadata={"neuron_id": nid, "source": "dream_cycle"})
     except ImportError:
         pass
     except Exception as e:

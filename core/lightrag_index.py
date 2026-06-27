@@ -15,6 +15,7 @@ _rag = None
 _rag_lock = threading.Lock()
 _rag_ready = False
 _rag_ready_lock = threading.Lock()
+_lightrag_loop = None  # event loop dedicado e persistente (ver _run_on_lightrag_loop)
 
 _WORKING_DIR = str(
     Path(os.environ.get("SINAPSE_HOME", ".")) / "claude-mem" / "data" / "lightrag"
@@ -166,12 +167,31 @@ def get_rag():
 
 
 async def _ensure_initialized(rag):
-    """Garante storages inicializados (v1.5.4 requer chamada explícita)."""
+    """Garante storages + pipeline status inicializados (v1.5.4 requer ambos).
+
+    Sem initialize_pipeline_status(), o ainsert apenas ENFILEIRA o documento e o
+    pipeline de processamento não roda ("pipeline stopped") — nenhuma entidade é
+    extraída e os vdb_entities/relationships ficam vazios. Esta era a causa de
+    sinapse_rag_query retornar sempre [no-context].
+    """
     try:
         await rag.initialize_storages()
-    except Exception as e:
+    except Exception:
         # Já inicializado ou função não-existente em versões antigas
         pass
+    try:
+        from lightrag.kg.shared_storage import initialize_pipeline_status
+        await initialize_pipeline_status()
+    except Exception:
+        pass
+
+
+def _reset_rag() -> None:
+    """Invalida o singleton para que o próximo get_rag reconstrua e recarregue
+    o estado persistido do disco."""
+    global _rag, _rag_ready
+    _rag = None
+    _rag_ready = False
 
 
 async def index_memory(text: str, metadata: dict | None = None) -> bool:
@@ -182,6 +202,13 @@ async def index_memory(text: str, metadata: dict | None = None) -> bool:
     try:
         await _ensure_initialized(rag)
         await rag.ainsert(text)
+        # Persiste em disco: o nano-vectordb mantém entidades/relações apenas em
+        # memória e só grava nos vdb_*.json ao finalizar os storages. Sem isto, a
+        # extração roda (LLM é chamado) mas vdb_entities/relationships ficam em
+        # 49B e sinapse_rag_query retorna sempre [no-context]. Após fechar os
+        # storages, invalidamos o singleton para recarregar do disco na próxima.
+        await rag.finalize_storages()
+        _reset_rag()
         return True
     except Exception as e:
         print(f"  ⚠ LightRAG index falhou: {e}")
@@ -201,9 +228,34 @@ async def query_rag(question: str, mode: str = "hybrid") -> str:
     except Exception as e:
         print(f"  ⚠ LightRAG query falhou: {e}")
         return ""
-    finally:
-        if rag is not None:
-            try:
-                await rag.finalize()
-            except Exception:
-                pass
+    # NÃO finalizar aqui: o singleton _rag é reutilizado por todo o processo no
+    # loop dedicado. Finalizar por chamada destruía os storages inicializados,
+    # forçando re-init e quebrando filas de concorrência entre chamadas.
+
+
+def _run_on_lightrag_loop(coro_factory):
+    """Roda corrotinas LightRAG num event loop dedicado e *persistente*.
+
+    LightRAG cria filas de concorrência (asyncio) na construção/inicialização,
+    presas ao loop ativo nesse momento. asyncio.run() — ou loops efêmeros —
+    criam um loop novo a cada chamada, então o singleton _rag e suas filas
+    passam a apontar para um loop morto → "bound to a different event loop".
+    Um único loop reutilizado, definido como corrente, mantém tudo coerente.
+    """
+    global _lightrag_loop, _rag, _rag_ready
+    if _lightrag_loop is None or _lightrag_loop.is_closed():
+        _lightrag_loop = asyncio.new_event_loop()
+        _rag = None
+        _rag_ready = False
+    asyncio.set_event_loop(_lightrag_loop)
+    return _lightrag_loop.run_until_complete(coro_factory())
+
+
+def index_memory_sync(text: str, metadata: dict | None = None) -> bool:
+    """Wrapper síncrono de index_memory no loop dedicado (ver _run_on_lightrag_loop)."""
+    return _run_on_lightrag_loop(lambda: index_memory(text, metadata))
+
+
+def query_rag_sync(question: str, mode: str = "hybrid") -> str:
+    """Wrapper síncrono de query_rag no loop dedicado (ver _run_on_lightrag_loop)."""
+    return _run_on_lightrag_loop(lambda: query_rag(question, mode=mode))
