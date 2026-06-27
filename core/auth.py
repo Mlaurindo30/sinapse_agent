@@ -425,6 +425,13 @@ HIVE_LLM_ROLES = (
     # são file-based (sem LLM hoje), mas reservados; pattern_distiller e
     # conflict_detector usam LLM (herdam do dreamer = gemini-cli por default).
     "decision_promoter", "project_synthesizer", "pattern_distiller", "conflict_detector",
+    # Fase 4 (grafo temporal + RAG): extração de entidades/relações. São
+    # SEMPRE Ollama local (sem provider/fallback remoto): os clientes leem
+    # apenas HIVE_GRAPHITI_MODEL / HIVE_LIGHTRAG_MODEL (default qwen2.5:3b).
+    # Configurados pelo setup-brain no menu "Extração local", não pela
+    # máquina de providers. Listados aqui só para serem canônicos (sem aviso
+    # de typo em get_role_config) e documentados.
+    "graphiti", "lightrag",
 )
 
 def get_role_config(role: str) -> Optional[Dict[str, Optional[str]]]:
