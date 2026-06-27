@@ -21,7 +21,7 @@ Fonte única de verdade para Thoth (agente pessoal do Michel) e todos os coding 
 
 | Camada | Ferramenta | O que faz | Como acessar | Gap |
 |--------|-----------|----------|-------------|-----|
-| 1 — Estrutural | **Graphify** | Knowledge graph com Leiden clustering | `graphify-out/graph.json` | ~6h (reindex) |
+| 1 — Estrutural | **Graphify** | Knowledge graph com Leiden clustering | `cortex/occipital/grafo/graph.json` | ~6h (reindex) |
 | 2 — Temporal | **claude-mem** | Tracking de eventos, FTS5, Chroma | Worker HTTP `:37700` | Zero |
 | 3 — Execução | **RTK** | Otimização de comandos shell | Plugin Hermes `pre_tool_call` | Zero |
 | 4 — Associativa | **Neural Memory** | Busca vetorial HNSW, conceitos relacionados | Plugin Python `sinapse-memory` | ~6h |
@@ -33,7 +33,7 @@ Fonte única de verdade para Thoth (agente pessoal do Michel) e todos os coding 
 
 **Verificação de saúde (antes de qualquer sessão):**
 ```bash
-ls graphify-out/graph.json                          # graph deve existir
+ls cortex/occipital/grafo/graph.json                # graph deve existir
 curl -s http://127.0.0.1:37700/health               # worker deve responder {"status":"ok"}
 systemctl --user is-active sinapse-claude-mem.service
 ```
@@ -44,39 +44,39 @@ systemctl --user is-active sinapse-claude-mem.service
 
 | Pasta | Propósito | Arquivos-chave |
 |-------|-----------|---------------|
-| `brain/` | Conhecimento operacional do agente | North Star, Patterns, Key Decisions, Gotchas, Memories, Skills, Current State |
-| `atoms/` | Notas Zettelkasten atômicas (1 ideia = 1 node) | Notas de 3-10 parágrafos densamente linkadas |
-| `work/` | Projetos, decisões, pipeline | `Index.md` (MOC), `active/`, `archive/`, `meetings/` |
-| `org/` | Pessoas e times | `People & Context.md` (MOC) |
-| `reference/` | Documentação técnica, business docs | ICP, positioning, pricing, services |
-| `templates/` | Templates Obsidian tipados | Atom Note, Work Note, Decision Record, Thinking Note |
-| `bases/` | Database views dinâmicas | Work Dashboard, Incidents, People, 1-1 History, Review Evidence |
-| `thinking/` | Scratchpad temporário | Após promover conteúdo, deletar |
-| `.claude/` | Comandos, hooks, agentes, skills | 18 commands, 9 agents, 5 hooks, obsidian-skills |
-| `.codex/` | Config Codex CLI | hooks.json |
-| `.gemini/` | Config Gemini CLI | settings.json |
+| `cortex/temporal/` | Memória de longo prazo por projeto | `projeto/topico/neuronio-*.md` |
+| `cortex/frontal/` | Decisões, planejamento e trabalho ativo | `decisoes/`, `trabalho/`, `brain/`, `org/` |
+| `cortex/parietal/` | Inbox, referências e entrada sensorial | `inbox/`, `referencias/`, `analises/` |
+| `cortex/occipital/` | Visão e grafo | `capturas-visuais/`, `grafo/graph.json` |
+| `cortex/insula/` | Saúde, conflitos e autoconsciência | `saude/`, `conflitos/` |
+| `cerebelo/` | Ritmo, sessões, diário, semanal e padrões | `sessoes/`, `diario/`, `semanal/`, `padroes/Patterns.md` |
+| `diencefalo/` | Relay cross-projeto | `setores/`, `roteamento/` |
+| `tronco/` | Infra vital do vault | `modelos/`, `paineis/`, `infra/`, `meta/` |
+| `tronco/infra/agentes/.claude/` | Comandos, hooks, agentes, skills | 18 commands, 9 agents, 5 hooks, obsidian-skills |
+| `tronco/infra/agentes/.codex/` | Config Codex CLI | hooks.json |
+| `tronco/infra/agentes/.gemini/` | Config Gemini CLI | settings.json |
 
 ---
 
 ## 3. Como cada agente usa este vault
 
 ### O Protocolo de Execução (Agent Loop)
-Todo agente DEVE seguir estritamente o `cerebro/brain/Agent Loop Protocol.md`. Este protocolo unifica a disciplina de pensamento do Manus com a soberania do usuário e a prioridade de memória do Sinapse.
+Todo agente DEVE seguir estritamente o protocolo Sinapse injetado em `AGENTS.md` e nos clientes MCP. Este protocolo unifica a disciplina de pensamento do Manus com a soberania do usuário e a prioridade de memória do Sinapse.
 
 ### Thoth (Hermes Agent — agente principal do Michel)
 
-- Lê `brain/Current State.md` via sinapse-memory plugin (pre_prompt_build)
-- Consulta `brain/North Star.md` e `brain/Patterns.md` para contexto
-- Escreve decisões em `work/active/`
-- Apenda aprendizados em `brain/Patterns.md`
-- Atualiza `brain/Current State.md` ao final da sessão
+- Lê `cortex/frontal/brain/Current State.md` via sinapse-memory plugin (pre_prompt_build)
+- Consulta `cortex/frontal/brain/` e `cerebelo/padroes/Patterns.md` para contexto
+- Escreve decisões em `cortex/frontal/trabalho/ativo/`
+- Apenda aprendizados em `cerebelo/padroes/Patterns.md`
+- Atualiza `cortex/frontal/brain/Current State.md` ao final da sessão
 - Interface: WhatsApp
 
 ### Claude Code
 
 - Lê `CLAUDE.md` como manual de operações (automático)
 - Lê `AGENTS.md` como guia complementar
-- Hooks em `.claude/settings.json` — SessionStart, UserPromptSubmit, PostToolUse, PreCompact, Stop
+- Hooks em `tronco/infra/agentes/.claude/settings.json` — SessionStart, UserPromptSubmit, PostToolUse, PreCompact, Stop
 - Comandos: `/om-standup`, `/om-dump`, `/om-wrap-up`, etc.
 - Skills: obsidian-markdown, obsidian-cli, obsidian-bases, json-canvas, defuddle, qmd
 
@@ -87,7 +87,7 @@ Todo agente DEVE seguir estritamente o `cerebro/brain/Agent Loop Protocol.md`. E
   ```toml
   project_doc_fallback_filenames = ["CLAUDE.md"]
   ```
-- Hooks em `.codex/hooks.json` (mesmos scripts do Claude Code)
+- Hooks em `tronco/infra/agentes/.codex/hooks.json` (mesmos scripts do Claude Code)
 - Comandos: digitar `om-standup` (sem `/`)
 
 ### Gemini CLI
@@ -97,7 +97,7 @@ Todo agente DEVE seguir estritamente o `cerebro/brain/Agent Loop Protocol.md`. E
   ```json
   { "context": { "fileName": ["GEMINI.md", "CLAUDE.md"] } }
   ```
-- Hooks em `.gemini/settings.json` (mesmos scripts do Claude Code)
+- Hooks em `tronco/infra/agentes/.gemini/settings.json` (mesmos scripts do Claude Code)
 
 ### Outros agentes (Cursor, Windsurf, Copilot, OpenCode)
 
@@ -109,7 +109,7 @@ Todo agente DEVE seguir estritamente o `cerebro/brain/Agent Loop Protocol.md`. E
 
 ## 4. Hooks (5 lifecycle hooks)
 
-Scripts em `.claude/scripts/` — TypeScript puro, sem build step, sem dependências de SDK.
+Scripts em `tronco/infra/agentes/.claude/scripts/` — TypeScript puro, sem build step, sem dependências de SDK.
 
 | Hook | Quando | O que faz |
 |------|--------|----------|
@@ -123,7 +123,7 @@ Scripts em `.claude/scripts/` — TypeScript puro, sem build step, sem dependên
 
 ## 5. Comandos (18 slash commands)
 
-Definidos em `.claude/commands/`. Agent-agnostic markdown com YAML frontmatter.
+Definidos em `tronco/infra/agentes/.claude/commands/`. Agent-agnostic markdown com YAML frontmatter.
 
 | Comando | Propósito |
 |---------|----------|
@@ -150,7 +150,7 @@ Definidos em `.claude/commands/`. Agent-agnostic markdown com YAML frontmatter.
 
 ## 6. Subagentes (9 agentes especializados)
 
-Definidos em `.claude/agents/`. Rodam em contextos isolados.
+Definidos em `tronco/infra/agentes/.claude/agents/`. Rodam em contextos isolados.
 
 | Agente | Propósito |
 |--------|----------|
@@ -171,7 +171,7 @@ Definidos em `.claude/agents/`. Rodam em contextos isolados.
 O vault é a fonte única de verdade. A memória do agente opera em **5 camadas:**
 
 ### Camada 1 — Structural Memory (Graphify)
-- `graphify update cerebro/` → `cerebro/graphify-out/graph.json`
+- `graphify update cerebro/` → `cerebro/cortex/occipital/grafo/graph.json`
 - 1266+ nodes, 1319+ edges, 117 comunidades (Leiden clustering)
 - Query via: `graphify query`, MCP server, ou sinapse-memory plugin
 - **Gap:** ~6h entre reindexações automáticas
@@ -204,7 +204,7 @@ O vault é a fonte única de verdade. A memória do agente opera em **5 camadas:
 
 ### Write path
 ```
-Decisão → vault (work/active/)  ← Graphify reindex (cron 6h)
+Decisão → vault (cortex/frontal/trabalho/ativo/) ← Graphify reindex
         → claude-mem (memory_add) ← temporal tracking
         → comandos passam pelo RTK ← otimização
         → hybrid search encontra INSTANTANEAMENTE ← camada 5 filesystem
@@ -214,20 +214,20 @@ Decisão → vault (work/active/)  ← Graphify reindex (cron 6h)
 
 ## 8. Regras de filing (onde cada coisa vai)
 
-- **Projeto ativo** → `work/active/`
-- **Projeto concluído** → `work/archive/`
-- **Decisão** → `work/active/` (Decision Record template) + link no `work/Index.md`
-- **Ideia/conceito atômico** → `atoms/` (Atom Note template, 1 ideia = 1 nota)
-- **Pessoa** → `org/people/`
-- **Time** → `org/teams/`
-- **Brain dump / reflexão** → `thinking/` (depois promover ou deletar)
-- **Convenção / padrão** → `brain/Patterns.md` (append)
-- **Aprendizado** → `brain/Patterns.md` (append) ou `atoms/` se for uma ideia independente
-- **Gotcha** → `brain/Gotchas.md`
-- **Decisão importante** → `brain/Key Decisions.md`
-- **Referência técnica** → `reference/`
-- **Documento de negócio** → `reference/business-*.md`
-- **Análise de ferramenta/skill/plugin** → `reference/analises/` (template: [[templates/Analise Fria|Análise Fria]], ver [[#10-análises-de-ferramentas]])
+- **Projeto ativo** → `cortex/frontal/trabalho/ativo/`
+- **Projeto concluído** → `cortex/frontal/trabalho/arquivo/`
+- **Decisão** → `cortex/frontal/decisoes/` ou `cortex/frontal/trabalho/ativo/` conforme escopo
+- **Ideia/conceito atômico** → `cortex/temporal/<projeto>/<topico>/neuronio-*.md`
+- **Pessoa** → `cortex/frontal/org/people/`
+- **Time** → `cortex/frontal/org/teams/`
+- **Brain dump / reflexão** → `cortex/parietal/inbox/` até promover
+- **Convenção / padrão** → `cerebelo/padroes/Patterns.md` (append)
+- **Aprendizado** → `cerebelo/padroes/Patterns.md` ou neurônio temporal se for fato independente
+- **Gotcha** → `cortex/insula/conflitos/` ou `cortex/frontal/brain/`
+- **Decisão importante** → `cortex/frontal/decisoes/`
+- **Referência técnica** → `cortex/parietal/referencias/`
+- **Documento de negócio** → `cortex/parietal/referencias/`
+- **Análise de ferramenta/skill/plugin** → `cortex/parietal/analises/`
 
 ---
 
@@ -263,7 +263,7 @@ Campos adicionais por tipo:
 ## 11. Análises de ferramentas (fluxo Thoth)
 
 Quando Michel enviar uma skill, plugin, ferramenta, integração ou ideia para avaliação,
-Thoth gera uma **Análise Fria** usando o template `templates/Analise Fria.md` e salva em `reference/analises/`.
+Thoth gera uma **Análise Fria** usando o template `tronco/modelos/Analise Fria.md` e salva em `cortex/parietal/analises/`.
 
 ### Seções obrigatórias
 - Veredito (adotar sim/não, com qual escopo)
@@ -277,7 +277,7 @@ Thoth gera uma **Análise Fria** usando o template `templates/Analise Fria.md` e
 
 ### Fluxo
 ```
-Michel envia (PDF, link, ideia) → Thoth analisa → salva em reference/analises/ → registra no claude-mem
+Michel envia (PDF, link, ideia) → Thoth analisa → salva em cortex/parietal/analises/ → registra no claude-mem
 ```
 
 O arquivo serve como registro permanente de avaliação para decisões futuras.
@@ -294,26 +294,26 @@ O arquivo serve como registro permanente de avaliação para decisões futuras.
 |---------|------|-----------|
 | Qualquer pergunta sobre projeto, ferramenta, decisão passada | Consultar vault primeiro | `session_search()` ou `sinapse-write.py query` |
 | Dúvida sobre contexto de conversas anteriores | Buscar no histórico | `session_search(query="...")` |
-| Referência a ferramenta/skill/plugin já analisada | Verificar análises existentes | `search_files(pattern="...", path="cerebro/reference/analises/")` |
-| Decisão técnica ou arquitetural | Verificar `brain/Key Decisions.md` | `read_file("cerebro/brain/Key Decisions.md")` |
-| Padrão ou convenção | Verificar `brain/Patterns.md` | `read_file("cerebro/brain/Patterns.md")` |
+| Referência a ferramenta/skill/plugin já analisada | Verificar análises existentes | `search_files(pattern="...", path="cerebro/cortex/parietal/analises/")` |
+| Decisão técnica ou arquitetural | Verificar decisões | `read_file("cerebro/cortex/frontal/decisoes/")` |
+| Padrão ou convenção | Verificar padrões | `read_file("cerebro/cerebelo/padroes/Patterns.md")` |
 
 ### Escrita obrigatória (após agir)
 
 | Gatilho | Ação | Destino |
 |---------|------|---------|
-| Decisão tomada (qualquer) | Registrar | `work/active/` (Decision Record) + `claude-mem memory_add` |
-| Ferramenta/skill avaliada | Análise Fria completa | `reference/analises/` + PDF + `claude-mem` |
-| Aprendizado novo | Apendar | `brain/Patterns.md` |
-| Erro cometido ou gotcha | Registrar | `brain/Gotchas.md` |
-| Fim de tarefa complexa (5+ tool calls) | Atualizar estado | `brain/Current State.md` |
+| Decisão tomada (qualquer) | Registrar | `cortex/frontal/decisoes/` ou `cortex/frontal/trabalho/ativo/` + `claude-mem memory_add` |
+| Ferramenta/skill avaliada | Análise Fria completa | `cortex/parietal/analises/` + PDF + `claude-mem` |
+| Aprendizado novo | Apendar | `cerebelo/padroes/Patterns.md` |
+| Erro cometido ou gotcha | Registrar | `cortex/insula/conflitos/` |
+| Fim de tarefa complexa (5+ tool calls) | Atualizar estado | `cortex/frontal/brain/Current State.md` |
 | Skill criada ou modificada | Salvar | `skill_manage()` + `claude-mem` |
 
 ### Health check (início de sessão)
 
 Antes de qualquer resposta complexa, verificar:
 ```bash
-python3 scripts/sinapse-write.py health
+python3 scripts/services/sinapse-write.py health
 ```
 Se qualquer backend falhar, reportar e oferecer correção imediata.
 

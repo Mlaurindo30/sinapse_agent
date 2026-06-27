@@ -8,14 +8,14 @@ scope: root
 > Home do cérebro. Workspace global — o "eu" que integra os lobos.
 
 ## Projetos (lobo temporal — memória)
-- [[_ComfyUI|ComfyUI]] — 24 neurônio(s)
-- [[_Hive-Mind|Hive-Mind]] — 80 neurônio(s)
+- [[_ComfyUI|ComfyUI]] — 31 neurônio(s)
+- [[_Hive-Mind|Hive-Mind]] — 111 neurônio(s)
 - [[_OpenAlice|OpenAlice]] — 13 neurônio(s)
-- [[_Thoth|Thoth]] — 30 neurônio(s)
+- [[_Thoth|Thoth]] — 39 neurônio(s)
 - [[_agent-langgraph|agent-langgraph]] — 13 neurônio(s)
-- [[_e2e-chatbot-app-next|e2e-chatbot-app-next]] — 22 neurônio(s)
-- [[_michel|michel]] — 35 neurônio(s)
-- [[_open-design|open-design]] — 8 neurônio(s)
+- [[_e2e-chatbot-app-next|e2e-chatbot-app-next]] — 38 neurônio(s)
+- [[_michel|michel]] — 45 neurônio(s)
+- [[_open-design|open-design]] — 17 neurônio(s)
 - [[_openclaw-crestodian-planner-NyDaMs|openclaw-crestodian-planner-NyDaMs]] — 7 neurônio(s)
 
 ## Setores (diencéfalo — relay cross-projeto)

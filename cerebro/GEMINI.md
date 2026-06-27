@@ -8,13 +8,13 @@ This vault is built for multiple AI coding agents. The primary operating manual 
 
 ## Hooks
 
-The hook scripts in `.claude/scripts/` are agent-agnostic TypeScript and shell, executed natively by Node via `--experimental-strip-types` — no build step, no runtime dependencies, no Claude SDK. Hook configs are provided for three agents:
+The hook scripts in `tronco/infra/agentes/.claude/scripts/` are agent-agnostic TypeScript and shell, executed natively by Node via `--experimental-strip-types` — no build step, no runtime dependencies, no Claude SDK. Hook configs are provided for three agents:
 
 | Agent | Config | Status |
 |-------|--------|--------|
-| Claude Code | `.claude/settings.json` | Full support |
-| Codex CLI | `.codex/hooks.json` | Shared hook scripts |
-| Gemini CLI | `.gemini/settings.json` | Shared hook scripts |
+| Claude Code | `tronco/infra/agentes/.claude/settings.json` | Full support |
+| Codex CLI | `tronco/infra/agentes/.codex/hooks.json` | Shared hook scripts |
+| Gemini CLI | `tronco/infra/agentes/.gemini/settings.json` | Shared hook scripts |
 
 | Script | Purpose | Claude event | Codex event | Gemini event |
 |--------|---------|--------------|-------------|--------------|
@@ -25,7 +25,7 @@ The hook scripts in `.claude/scripts/` are agent-agnostic TypeScript and shell, 
 
 ## Commands
 
-18 commands in `.claude/commands/` — agent-agnostic markdown with YAML frontmatter.
+18 commands in `tronco/infra/agentes/.claude/commands/` — agent-agnostic markdown with YAML frontmatter.
 
 - **Claude Code / Gemini CLI**: invoke as `/om-standup`, `/om-dump`, etc.
 - **Codex CLI**: type the command name as a regular prompt without the `/` prefix (e.g. `om-standup`). Codex will find and execute the command file.
@@ -38,7 +38,7 @@ The `~/.claude/` auto-loaded memory index is Claude Code-specific — skip that 
 
 ## Subagents
 
-9 subagents in `.claude/agents/` handle isolated tasks (brag spotting, vault auditing, cross-linking, etc.). The prompt content is agent-agnostic markdown. Codex CLI (`.codex/agents/`) and Gemini CLI (`.gemini/agents/`) support the same pattern — copy the files and adapt the YAML frontmatter fields to your agent's schema.
+9 subagents in `tronco/infra/agentes/.claude/agents/` handle isolated tasks (brag spotting, vault auditing, cross-linking, etc.). The prompt content is agent-agnostic markdown. Codex CLI (`tronco/infra/agentes/.codex/agents/`) and Gemini CLI (`tronco/infra/agentes/.gemini/agents/`) support the same pattern — copy the files and adapt the YAML frontmatter fields to your agent's schema.
 
 ## What's Claude Code-specific
 

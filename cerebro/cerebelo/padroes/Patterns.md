@@ -665,3 +665,336 @@ Skills críticas salvas: dynamic-workflow, council, devin-mode, kiro-mode, winds
 ## MCP Pattern (2026-06-17)
 
 Learning from MCP
+
+
+---
+
+## Ler fonte antes de explicar ferramenta externa — não decorar da memória (2026-06-25)
+
+Não decorar explicações sobre ferramentas da memória do projeto. Sempre ler a fonte primária (README do GitHub, código atual) antes de explicar o que uma ferramenta faz.
+
+Caso concreto: descrevi RTK como "plugin Hermes" e "camada de execução do cérebro" baseado no que a memória do Hive-Mind tinha — sem verificar o repositório oficial https://github.com/rtk-ai/rtk. Michel pegou o erro e pediu pra ler antes de vomitar.
+
+O RTK na real:
+- CLI proxy Rust (rtk-ai/rtk, 66k stars), single binary
+- Intercepta comandos shell antes da execução e rewrite pra versões compactas
+- Reduz 60-90% token consumption em comandos comuns
+- NÃO é plugin Hermes — Hermes é um dos 14 tools suportados
+- Funciona com Claude Code, Cursor, Codex, Gemini, OpenCode, Cline, Roo Code, Kilo Code, etc.
+- Age entre agente e shell via hooks (PreToolUse / tool.execute.before / plugin)
+
+Heurística:
+- Quando uma frase sobre uma ferramenta "soa" como um resumo de arquivo de docs do projeto, ir verificar o upstream oficial antes de usar como verdade
+- "Plugin do X" é claim forte — exige confirmar via repo, README ou código
+- "Camada Y" também — exige confirmar arquitetura real
+- Preferir ler 30 segundos do README do que confiar em resumo decorado
+
+Aplicável a qualquer ferramenta externa: RTK, Graphify, LightRAG, OmniParser, OpenMemory, Cognee, etc. Todas são "órgãos" do cérebro no sentido anatômico, mas cada uma tem arquitetura, runtime e escopo próprios que precisam ser lidos na fonte, não decorados.
+
+
+---
+
+## Não descrever ferramenta externa como parte do Hive-Mind — ler código antes (2026-06-25)
+
+Lição do incidente RTK/Hermes no sinapse_health (commits a91b39e → 84a4d80 → 8a1db6b):
+
+A fronteira "o que é parte do Hive-Mind vs o que é ferramenta externa" não estava clara na minha memória decorada. Michel corrigiu três vezes até ficar certo.
+
+Regra operacional: ao descrever qualquer ferramenta no schema MCP, no roadmap, em docstring ou em commit message, antes de afirmar a relação dela com o Hive-Mind, verificar:
+
+1. LER `plugins/hermes/sinapse-memory.py` linhas 1-13 (cabeçalho) pra confirmar o que o plugin DO Hermes faz (acesso ao cérebro, não parte do cérebro).
+
+2. LER `README.md` linhas ao redor de "Arquitetura" / "Componentes" pra ver o que o repo declara como interno vs externo.
+
+3. Verificar no `integrations/` — TUDO dentro é vendor que virou órgão do cérebro. TUDO fora (RTK upstream, Hermes, Claude Code, etc.) é externo e só se conecta.
+
+4. Para qualquer ferramenta externa (RTK, Hermes, Claude Code, Cursor, etc.), a frase correta é SEMPRE: "<ferramenta> é externa, unrelated ao Hive-Mind; agents that want <ferramenta> install it themselves". Nunca descrever como se fosse parte do produto.
+
+Erros específicos que cometi e por quê:
+
+- "RTK é plugin Hermes" → decorei da memória do projeto sem verificar. RTK é independente; Hermes é um dos 14 consumers suportados pelo `rtk init`.
+
+- "shell optimizer / execution layer" → descrevi o RTK pelo que eu achava que fazia, não pelo que ele faz. RTK é CLI proxy Rust (rtk-ai/rtk, 66k stars) que intercepta comandos shell.
+
+- Sugerir que RTK é parte do Hive-Mind → venho do `integrations/rtk/` que existe no repo, mas é CLONE pra o usuário ter binário pronto, não feature do cérebro. O cérebro não usa RTK.
+
+Como o Michel sinalizou: "Hermes é um agent que se conecta a nbossa tool ele nem tem que ser listado diferente disso em nenhum lugar, assim como qualquer outro". Hermes é cliente, não parte. Mesma categoria do RTK, do Claude Code, do Cursor.
+
+Heurística final: se a frase começa com "<ferramenta> faz parte do Hive-Mind" ou "<ferramenta> é um módulo/plugin do <repo>", pare e releia. Provavelmente está confundindo "instalado em" com "parte de".
+
+
+---
+
+## P2P Sync implementation: estado atual vs docs/07-p2p-sync-setup.md (2026-06-25)
+
+Revisão pré-implementação do P2P Sync em 2026-06-25.
+
+Arquivos existentes:
+- scripts/health/audit_memory.py: já faz scan de cortex/temporal, detecta hash mismatch (SHA-256 truncado em 16 chars), reindexa, ingere arquivos .sync-conflict-*.md e move para cortex/insula/conflitos/. Chama register_ambiguity() do core.database.
+- scripts/dream/semantic_diff.py: já calcula cosine similarity via get_embedder() e, se abaixo de threshold (0.98 default), chama call_llm_structured com SemanticDiffResult (DiffCategory.ADDITIVE/SUBSTITUTIVE/etc).
+- core/umc_schema.sql: tabela ambiguities já existe com id, neuron_id, source_a_hash, source_b_hash, content_a, content_b, metadata_a, metadata_b, status (pending/synthesized/branched).
+
+Gaps em relação a docs/07-p2p-sync-setup.md:
+1. O documento fala em UUID v4 para neuron_id; audit_memory.py ainda usa md_file.stem (hash/identificador derivado do filename), não UUID.
+2. O frontmatter integrity_hash esperado no .md não é verificado nem atualizado por audit_memory.py.
+3. semantic_diff.py não segue os thresholds definidos na spec (>0.92 idêntico, 0.70-0.92 complementar, <0.70 divergente → LLM).
+4. O documento descreve resolução autônoma (merge/choose_a/choose_b/branch) no dream_cycle.py; semantic_diff.py retorna suggested_resolution mas não aplica no vault nem atualiza ambiguities.status.
+5. Não há script de setup/install do Syncthing integrado ao install.sh, nem geração de cron para audit_memory.py.
+6. O spec menciona metadata machine_id, trust_level, source_observation_ids no frontmatter; ainda não propagado para atomic writes de decisões/aprendizados.
+7. Disaster recovery recover.sh é mencionado mas precisa ser verificado se já reconstrói o índice a partir do vault.
+
+Próximos passos sugeridos: alinhar com usuário quais gaps serão implementados neste ciclo e em que ordem; priorizar reconciliação vault↔SQLite + resolução de conflitos + UUID/PK.
+
+
+---
+
+## crsql_changes.pk é blob binário packed — nunca decodificar como utf-8 (2026-06-25)
+
+O campo `pk` retornado por `SELECT * FROM crsql_changes` no CR-SQLite 0.16.x NÃO é a string do id — é um blob binário packed (ex.: id 'n1' vira b'\x01\x0b\x02n1'). Para aplicar changes em outro peer, use SEMPRE INSERT INTO crsql_changes (apply_changes), que devolve o pk ao engine intacto. Nunca tente pk.decode('utf-8') para reconstruir o id e fazer INSERT direto na tabela user — isso corrompe a PK silenciosamente.
+
+Corolário de teste: um teste de convergência que só compara COUNT(*) entre dois DBs é insuficiente — passa mesmo com PKs corrompidas e updates perdidos. Sempre verificar (a) que os ids batem e (b) que UPDATE em linha existente propaga, não só insert de linha nova.
+
+Corolário de perf: antes de abandonar um caminho "lento", reproduza o benchmark isoladamente. Os 190s atribuídos a apply_changes/crsql_changes na verdade vinham do truque de arquivo temporário do Bloco C. apply_changes faz 65k changes em ~0.5s. Medir, não estimar.
+
+
+---
+
+## temporal: P8 Bloco D concluído: endpoints HTTP de sync CRDT adicionados em scripts/service (2026-06-25)
+
+P8 Bloco D concluído: endpoints HTTP de sync CRDT adicionados em scripts/services/sinapse-api.py — GET /api/v1/sync/export e POST /api/v1/sync/import. Reusam _export/_import_changes do CLI sinapse-sync.py via importlib (DRY, fonte única da lógica crsql_changes). Auth Bearer (verify_api_key), rate-limit 30/min, gate HIVE_CRDT_SYNC=true (503 se desabilitado). Ativam --push/--pull/--sync over-the-wire. Novo teste tests/integration/test_sync_endpoints.py: 4 testes (auth export, auth import, gate 503, round-trip HTTP completo preservando PK + propagando UPDATE) contra DBs CR-SQLite temporários, autocontido (não precisa do hive_mind.db real nem HIVE_RUN_INTEGRATION). Suíte CRDT+sync: 10/10 verde. Roadmap §P8 Sprint 3.1 atualizado (tarefas 4,6 corrigidas + tarefa 7 Bloco D). Lobo: Tronco (infra de transporte de estado).
+
+
+---
+
+## P8 re-pass com swarm (tester + code-analyzer): 12 achados, 9 corrigidos (2026-06-25)
+
+Em 2026-06-25 disparei dois agentes de swarm para re-passar toda a Fase P8 (CR-SQLite sync). Ambos foram precisos (verifiquei cada achado contra o código antes de agir — diferente da "péssima decisão" original que confiou em benchmark não-medido).
+
+TESTER (ruflo-testgen): adicionou tests/integration/test_crdt_gaps.py (11 testes), total subiu de 10 → 21 passando. Cobriu: convergência BIDIRECIONAL real, DELETE propaga via tombstone (CR-SQLite v0.16.3 emite tombstone com site_id local — confirmado empírico), --since incremental, idempotência (mesmo payload 2x), NULLs, preservação de TODAS as colunas (gap do bug antigo), tabelas goals/observations no round-trip, payload vazio, serialização bytes/None. Nenhum bug de produção novo revelado — confirma que o revert para apply_changes está sólido. PK composta não testável (synapses usa id TEXT PK simples, não composta).
+
+CODE-ANALYZER: confirmou ZERO vestígio do padrão quebrado (nenhum INSERT OR IGNORE/pk.decode no path de import). 12 achados. Corrigidos 9:
+- #1 (database.py:131) double-load da extensão crsql — enable_crdt já carrega internamente; removido.
+- #2 (database.py:299) injeção SQL via hostname no ALTER ... DEFAULT '{hostname}' — parametrizado (ALTER sem default + UPDATE com placeholder).
+- #3 (sinapse-api.py) /sync/import sem limite de payload — guard 413 com teto _MAX_SYNC_CHANGES=1M (env HIVE_SYNC_MAX_CHANGES).
+- #4 (setup_crdt.py) conexão vazada entre fases (b-c) e (e) — new.close() antes de reabrir.
+- #5 (sinapse-sync.py main) CLI não tinha gate HIVE_CRDT_SYNC — falha cedo com mensagem acionável (exit 1) em vez de OperationalError cru.
+- #7 (setup_crdt.py) re-executar resetava relógio vetorial CRDT — preflight detecta DB já-CRR e aborta sem --force.
+- #8 (sinapse-sync.py) timeout=10 vs 30s do get_connection — alinhado para timeout=30 (busy_timeout).
+- #9 (setup_crdt.py) --keep-original inerte (store_true+default=True nunca False) — virou BooleanOptionalAction funcional (--no-keep-original apaga backup).
+- #12 (setup_crdt.py) guard morto if not args.dry_run (dry-run já retorna antes) — removido.
+Pulei #6 (commit fora do try em apply_changes — mitigado por #8), #10 (ValueError de hex inválido), #11 (doc do commit em enable_crdt). Suíte 21/21 verde após todas as correções.
+
+Lição de processo: agentes de swarm para review são eficazes QUANDO o orquestrador verifica cada achado contra o código antes de aplicar — não aplicar cegamente nem descartar cegamente.
+
+
+---
+
+## temporal: P7 (MCP Streamable HTTP) concluído em 2026-06-25. scripts/services/sinapse-mcp-h (2026-06-25)
+
+P7 (MCP Streamable HTTP) concluído em 2026-06-25. scripts/services/sinapse-mcp-http.py com aiohttp, paralelo ao stdio, reusa handle_request/TOOLS de sinapse-mcp.py via importlib (nome com hífen). Decisão de design: tools sinapse_* são todas request/response → SEM SSE/server-push (stream sem nada a transmitir). Conformidade Streamable HTTP onde importa: POST /mcp single+batch→JSON, notificação→202, initialize→header Mcp-Session-Id, GET /mcp→405 (spec permite sem SSE), DELETE→encerra sessão, /health. aiohttp>=3.9 em pyproject; unit sinapse-mcp-http.service porta 37703 via env em install_services.py. 9 testes (test_mcp_http.py) + smoke ao vivo curl (initialize/tools-list=13/405/health). Commit cd7b632 no branch p8-crsqlite-sync. Sprint 3 (P7+P8) concluída. Pendentes: P9 Langfuse, P10 RAPTOR, P11 LanceDB, P13 OmniParser. Roadmap §P7 e §11 atualizados. Interop com cliente MCP real é verificação manual (claude mcp add --transport http sinapse-http http://localhost:37703/mcp).
+
+
+---
+
+## components.py tinha bug de path + patch do graphify foi perdido no rebase (2026-06-26)
+
+Dois bugs descobertos e corrigidos ao montar o fluxo de atualização:
+
+1. BUG DE PATH em scripts/setup/components.py: usava `ROOT / name` (ex.: <root>/graphify), mas os checkouts reais estão em <root>/integrations/<name>. Resultado: `verify` dava FAIL em todos. Corrigido adicionando campo `path` por componente no components.lock.json e helper component_target(name, spec) = ROOT / spec.get("path", name). Trocado em clone_pinned, bootstrap, verify, update, rollback, apply/remove_component_patch.
+
+2. PATCH DO GRAPHIFY PERDIDO: o git pull --rebase antigo avançou graphify para 905e0a7 e o patch Hive-Mind (graphify-hive-mind.patch) sumiu — sqlite_export.py ausente, zero to_sqlite/_trigger_document_ingest/.docx. A integração rodava SEM export SQLite em tempo real nem ingest de PDF/DOCX. Regenerado via `git apply --3way --unidiff-zero` (resolvi 4 conflitos manualmente; o 3-way preservou melhorias upstream que o patch antigo destruiria: to_json(community_labels=labels) e Path(os.fsdecode(...))). Novo patch valida forward+reverse-check, compila e passa tests/test_watch.py (44 passed).
+
+3. rtk tinha mudança Hive-Mind UNTRACKED (_log_to_umc em hooks/hermes/rtk-rewrite/__init__.py) que travaria o is_dirty do components.py update. Virou patch rastreado: integrations/patches/rtk-umc-logging.patch.
+
+LIÇÃO: patches frágeis em -U0 (unidiff-zero, sem contexto) quebram em git pull raw. O fluxo correto é components.py update (remove patch → fetch → reaplica → bumpa lock). O update script agora limpa __pycache__ antes para não disparar 'dirty checkout beyond the pinned patch'.
+
+
+---
+
+## agy/gemini CLIs são agênticos — isolar skills via HOME limpo p/ saída determinística (2026-06-26)
+
+Os CLIs `agy` (antigravity) e `gemini` suportam modo headless (`agy -p "..." --model X`; `gemini -p "..." -m X -o json`), mas são ASSISTENTES AGÊNTICOS: por padrão carregam contexto/skills globais de ~/.gemini/GEMINI.md e ~/.gemini/skills/ (inclui llm-council), poluindo a saída com vereditos em vez de JSON.
+
+SOLUÇÃO DE ISOLAMENTO (validada): rodar o CLI com HOME apontando p/ um dir cujo .gemini contém APENAS as credenciais (oauth_creds.json, projects.json, google_accounts.json, installation_id, state.json, config) via SYMLINKS para os arquivos reais (refresh do OAuth propaga), e SEM GEMINI.md nem skills/. Resultado: saída limpa ("OK" em vez de ensaio do council). Implementado em core/agy_client.py (_ensure_isolated_home em ~/.cache/hive-mind/agy-isolated). Também rodar de cwd neutro p/ evitar GEMINI.md/AGENTS.md do projeto.
+
+Extração de model IDs reais: `strings ~/.local/bin/agy | grep` revelou gemini-3.5-flash, gemini-3.1-pro, claude-sonnet-4-6, claude-opus-4-6, gpt-oss-120b-maas. `agy models` lista os nomes de display (com níveis Low/Medium/High = thinking budget, não modelos separados).
+
+CUIDADO: latência — cada chamada spawna o agy (segundos+). Para roles de alta frequência, o client Python (gemini-2.5 via Code Assist) é mais rápido; antigravity-cli é p/ quando se quer Claude/GPT-OSS especificamente.
+
+
+---
+
+## Code Assist serve Gemini 3.x na forma -preview; 404 inicial é transitório (validar 2x) (2026-06-26)
+
+CORREÇÃO de aprendizado anterior (que dizia 'gemini-cli só serve gemini-2.5'). Errado: foi artefato de 404s TRANSITÓRIOS na 1ª chamada (cold start / onboarding do loadCodeAssist / estado do token). Revalidando 2x e tratando 429 como 'modelo existe' (só quota), o quadro real do endpoint Code Assist (cloudcode-pa, v1internal:generateContent, provider gemini-cli) é:
+
+USÁVEL via client Python (core/gemini_cli_client.py):
+  gemini-2.5-flash, gemini-2.5-pro, gemini-3.1-flash-lite,
+  gemini-3-flash-preview, gemini-3.1-pro-preview, gemini-3-pro-preview
+
+404 (NÃO existem nesta superfície):
+  gemini-3.5-flash, gemini-3.1-pro (forma SEM -preview)
+
+ASSIMETRIA-CHAVE entre as duas superfícies:
+  • Code Assist (gemini-cli, client Python): Gemini 3.x usa forma '-preview'
+    (gemini-3.1-pro-preview, gemini-3-flash-preview, gemini-3-pro-preview).
+  • agy nativo (provider antigravity): usa forma SEM -preview (gemini-3.1-pro)
+    e tem gemini-3.5-flash + claude-sonnet/opus-4-6 + gpt-oss-120b-maas.
+
+LIÇÃO METODOLÓGICA: ao validar disponibilidade de modelo via Code Assist, rodar
+>=2 passagens e classificar 200/429 como 'usável', só 404 consistente como
+'indisponível'. Uma única chamada pode dar 404 falso por cold start.
+
+Config atual (auth.PROVIDERS_CONFIG models_hint + gemini_cli_client._MODEL_ROTATION):
+gemini-cli = [2.5-flash, 3.1-flash-lite, 3-flash-preview, 3.1-pro-preview, 3-pro-preview, 2.5-pro];
+antigravity = [gemini-3.5-flash, gemini-3.1-pro, claude-sonnet-4-6, claude-opus-4-6, gpt-oss-120b-maas].
+
+
+---
+
+## Estudo 2 — correção das 11 falhas de teste (6 unit + 3 regressão + 2 integ) (2026-06-26)
+
+Investigação e correção das falhas pré-existentes + regressões do Estudo 1. Suíte final: 579 passed, 7 skipped, 0 failed.
+
+UNIT (6 originais):
+1. test_visual_capture (2): LACUNA REAL. capture_screen não tinha param `monitor` nem guarda multi-monitor (o protocolo/MCP exigem). Implementado em scripts/capture/visual_capture.py: detecta >1 monitor real via mss.monitors e exige monitor=N; passa mon=monitor ao sct.shot. BÔNUS: o __main__ não parseava --monitor (o wrapper MCP _capture_screen já passava `--monitor N`, mas o CLI jogava tudo na description) — corrigido o parse.
+2. test_register_mcp (3): TESTES DESATUALIZADOS. register-mcp.sh foi consolidado p/ registrar SÓ sinapse-memory (federa os backends; CLAUDE.md "use SOMENTE sinapse_*"), removendo claude-mem-local/neural-memory-local. Tests atualizados p/ servidor único + corrigida asserção do log do codex (mcp add tem --env antes do --) + o merge test agora usa PROJECT_ROOT tmp (não poluir repo real).
+3. test_capture_tailer (1): BUG REAL. capture-tailer.py fazia `if not sources: continue`, pulando adapters mode=reparse sem fontes de arquivo (screenpipe REST, owner=timer) → captura REST nunca rodava pelo timer. Corrigido: reparse sem sources processa uma vez com source=None.
+
+REGRESSÃO do Estudo 1 (3): test_gemini_cli_client (endpoint_por_provider, model_chain_rotaciona, 429_rotaciona) referenciavam antigravity como Code Assist + IDs antigos. Atualizados: antigravity saiu do gemini_cli_client (virou agy); default endpoint=cloudcode-pa; chain gemini-cli com 3.x-preview.
+
+INTEGRAÇÃO (5):
+4. test_sinapse_api authenticated (3): POLUIÇÃO CROSS-FILE. test_sinapse_api e test_sync_endpoints setam HIVE_MIND_API_KEY no nível de módulo com chaves diferentes; a API lê a key por request → quem importa por último vence. Fix: fixture autouse com monkeypatch.setenv reafirmando a key de cada módulo antes de cada teste.
+5. test_vision_real (2): 429 do ollama-cloud (limite semanal da conta) — ambiental. Fix: _vision_call_or_skip pula (pytest.skip) em 429/quota em vez de falhar.
+
+
+---
+
+## setup-brain deve confirmar modelo vivo do claude-mem (2026-06-26)
+
+Ao trocar o papel claude_mem pelo scripts/setup/setup-brain.py, salvar HIVE_CLAUDE_MEM_PROVIDER/MODEL no .env não basta. É preciso executar scripts/setup/sync-claude-mem-provider.py e confirmar http://127.0.0.1:37700/api/settings, pois o worker real usa ~/.claude-mem/settings.json e pode permanecer no modelo antigo.
+
+
+---
+
+## P2 importlib zerado nos serviços via shim+rename (sinapse_mcp / sinapse_sync) (2026-06-26)
+
+Continuação da auditoria P2 (sys.path/importlib). Estado final: importlib inline ELIMINADO dos 4 consumers.
+
+Padrão aplicado (igual ao zettelkasten do codex — shim+rename, superior ao wrapper-importlib do hermes):
+1. `git mv scripts/services/sinapse-mcp.py → sinapse_mcp.py`; criado shim hifenizado `sinapse-mcp.py` (10 linhas: sys.path.insert(parents[2]) + `from scripts.services.sinapse_mcp import main`). Mantém o caminho que `register-mcp.sh` registra (linhas 104/266) e o stdio entrypoint. `sinapse-mcp-http.py` agora faz `from scripts.services import sinapse_mcp as _MCP` (removido `_load_mcp_module`/importlib); `_mcp()` retorna o global `_MCP` para os testes injetarem fake via monkeypatch.
+2. `git mv sinapse-sync.py → sinapse_sync.py` + shim análogo. `sinapse-api.py` `_get_sync_module()` agora faz `from scripts.services import sinapse_sync` (removido importlib.util import e o spec_from_file_location).
+3. `validate_hive_mind.py` e `operational_benchmark.py`: trocado importlib inline do plugin hermes pelo adapter existente `from plugins.hermes import sinapse_memory as sm` (operational_benchmark precisou de `sys.path.insert(ROOT)` pois roda direto via systemd).
+4. Testes ajustados (consequência do rename, pois carregavam o hifenizado por path e agora pegariam só o shim): test_sinapse_mcp.py, test_crdt.py, test_crdt_gaps.py, test_telemetry.py → todos passaram a `from scripts.services import sinapse_mcp/sinapse_sync`.
+
+Decisão de escopo: hermes (plugins/hermes/sinapse-memory.py) NÃO renomeado agora — ~20 conftests/__init__ de teste referenciam o path hifenizado; adapter sinapse_memory.py mantido (ainda tem 1 importlib interno, aceito).
+
+Verificação: py_compile OK; smoke import dos 3 módulos; MCP shim respondeu initialize JSON-RPC real pelo caminho registrado; 76 passed / 1 skipped na suíte afetada (mcp, api, sync, crdt, crdt_gaps, mcp_http, mcp_http_gaps, telemetry).
+
+Gotcha: shims só re-exportam `main`; qualquer consumidor que carregue o arquivo hifenizado por path e espere outros símbolos (handle_request/TOOLS/_export) quebra — apontar para o módulo underscore.
+
+
+---
+
+## Auditoria de funcionalidade Hive-Mind: gaps em LightRAG/Graphiti, loop asyncio e backlog (2026-06-26)
+
+Auditoria empírica (2026-06-26) do fluxo de arquitetura vivo. Núcleo 100% funcional (sinapse_query funde 7 backends, search_memories, temporal_search, REST :37702, claude-mem :37700, Graphify 3070 nós limpos, Dream Cycle roda). Gaps encontrados e correções:
+
+1. **Estágio 3.5 nunca rodava (causa raiz)**: o push para Graphiti (push_neuron) e LightRAG (index_memory) estava DENTRO do loop de síntese de ambiguidades em dream_cycle.py — só dispara em conflitos P2P, raríssimos single-machine. Por isso vdb_entities.json/relationships.json = 49 bytes (vazios) e FalkorDB sem grafos, apesar de 5028 neurons. FIX: helper _push_neurons_to_graphs() chamado em _route_and_persist_project — todo neurônio persistido alimenta os dois grafos. Commit 4e458a6.
+
+2. **Bug asyncio no Graphiti**: integrations/graphiti/client.py push_neuron/search_graph usavam asyncio.run() (cria+FECHA loop por chamada). O FalkorDriver no singleton _graphiti fica preso ao loop fechado → "Event loop is closed" a partir da 2ª chamada (exposto pelo push em lote). FIX: _run_async() com event loop dedicado persistente + reset do cliente se o loop fechar. Verificado: FalkorDB 0 grafos → grafo 'hive-mind' com 81 nós.
+
+3. **Pendência (qualidade de modelo, não código)**: extração de entidades do Ollama emite "json: unsupported value: NaN" e "entity not found for edge relation" para alguns conteúdos. Modelos: GRAPHITI_LLM_MODEL=qwen2.5-coder:3b (modelo de CÓDIGO sendo usado p/ extração de prosa) + bge-m3. Resultado: search_graph e sinapse_rag_query ainda esparsos pois a busca opera sobre edges de entidades, e a maioria dos 81 nós são Episodic (texto cru). Provável fix: trocar o modelo de extração por um de prosa (qwen2.5:7b / granite3-dense:8b). NaN do bge-m3 costuma vir de input vazio/whitespace.
+
+4. **test_sinapse_zettelkasten**: carregava o sinapse-zettelkasten.py hifenizado (shim só com main, pós codex rename) → faltavam _query_ollama/_sanitize_slug/_atomic_write. FIX: apontado p/ scripts.knowledge.sinapse_zettelkasten. 4/4 verdes.
+
+5. **Backlog reenquadrado**: archived=0 (fila)=3708, mas 90% (3343) é pico histórico Jun 16-18, 84% projeto Hive-Mind (dev pesado). Jun 26 só 94. Não é throughput crônico — é rajada represada. Quarentena archived=2=437 espalhada (decision 165, discovery 119, learning 85), 242 sem projeto. Dream Cycle tem size gate por design. Drenar com catch-up runs ou triagem.
+
+IMPORTANTE: MCP server e serviços systemd são processos de longa duração — não pegam mudanças de código até restart. Para LightRAG/Graphiti corrigidos valerem nas tools MCP, reiniciar sinapse-mcp e o próximo Dream Cycle.
+
+
+---
+
+## Embedder dim-0, LightRAG persistência e lentidão do Dream Cycle por NaN-retry (2026-06-27)
+
+Continuação da auditoria (2026-06-27). Correções e diagnósticos:
+
+COMMITS: 7937218 (embedder), 43b20a2 (lightrag estrutural), 532df74 (graphiti 8b), 4e458a6 (push+loop), 6cc8671 (P2).
+
+ITEM 1 (MCP reload): há 8+ processos sinapse-mcp.py stdio (um por sessão de agente). NÃO podem ser mortos às cegas (quebra sessões ativas, inclusive a própria). Código novo no disco recarrega quando cada agente reconecta. Não há daemon systemd de MCP; o HTTP :37703 não roda.
+
+ITEM 2 (embedder/LightRAG):
+- CORRIGIDO e commitado: OllamaEmbedder.embed("") devolvia dim-0 (Ollama /api/embeddings com prompt vazio → {"embedding":[]}). Agora placeholder " " + 1 retry. Beneficia sqlite-vec/UMC/LightRAG. Reprodução: embed("")→dim0, embed("   ")→1024, concorrente 8x→sem 500 (concorrência NÃO era a causa).
+- LightRAG estrutural corrigido em 4 camadas (loop dedicado, initialize_pipeline_status, persist via finalize_storages+reset, removido finalize-por-query). Extração passou a rodar (granite3-dense:8b extrai entidades válidas — provado). MAS persistência ainda falha: vdb_entities continua 49B mesmo com storage limpo. O 500 anterior vinha do estado poluído (36 docs PENDING/FAILED) no purge-on-resume; limpei o storage (backup .bak). Mesmo limpo, entidades não persistem — wiring extração→storage do LightRAG v1.5.4 com schema custom precisa de debug dedicado. Storage limpo em claude-mem/data/lightrag (backup .bak.*).
+
+ITEM 3 (backlog): catch-up (janela 80) consolidou 28 neurônios em 6 projetos, pendentes 3580→3500, MAS levou 25min (route_and_persist 16min). Causa da lentidão: push Graphiti falha com NaN ("failed to encode response: json: unsupported value: NaN" do Ollama, provável bge-m3 sob pressão de memória com 8b+bge carregados) e _retry_with_backoff trata como transitório → 1+2+4s por neurônio. .env NÃO seta GRAPHITI_LLM_MODEL (default 8b do código em efeito). A 80/25min, drenar 3500 = ~18h — inviável como está.
+
+RECOMENDAÇÕES FOCADAS (follow-up):
+1. Graphiti: não retentar erro NaN (determinístico, não-transitório) — ir direto ao fallback. Acelera o Dream Cycle massivamente.
+2. NaN sob carga: investigar Ollama (keep_alive/num parallel) ou separar modelos de chat vs embed para não competir memória.
+3. LightRAG: debug dedicado do wiring extração→nano-vectordb (v1.5.4 + entity_extraction_use_json custom).
+4. Backlog: após (1), drenar com janelas grandes; ou triar a rajada Jun 16-18 (84% Hive-Mind dev noise).
+
+
+---
+
+## LightRAG/Graphiti totalmente funcionais: schema field-names, modelo 2b na GPU e no-retry NaN (2026-06-27)
+
+Resolução dos 3 follow-ups da auditoria (2026-06-27). Commits c958e32, 2a5fdfb, 64dcecb.
+
+#1 — Dream Cycle lento (64dcecb): _retry_with_backoff do Graphiti retentava TODOS os erros (1+2+4s). O "json: unsupported value: NaN" do Ollama é determinístico → 7s desperdiçados/neurônio → route_and_persist ~16min. Novo _is_transient(): NaN/validação/schema falham na hora (→ fallback JSON-lines); só rede/timeout retenta. Verificado: NaN=1 tentativa/0s, ConnectionError=3/3s.
+
+#2 — NaN sob carga (2a5fdfb): causa = GPU 12GB. No Dream Cycle carregam Dreamer 8b (~6GB) + extração Graphiti 8b (~5GB) + bge-m3 (~1.2GB) > 12GB → OOM → embeddings NaN. Trocado GRAPHITI_LLM_MODEL default 8b→granite3-dense:2b (~1.6GB, prosa): coexiste (6.2+1.6+1.2≈9GB<12GB). Verificado: 3/3 push sem NaN, Entity nodes 85→145, search_graph retorna edges. (qwen2.5-coder:3b de CÓDIGO falhava; 2b de PROSA funciona.)
+
+#3 — LightRAG persistência (c958e32) — A DESCOBERTA CHAVE: o schema de extração e o prompt usavam entity_name/entity_type/entity_description e source_entity/etc. Mas o parser do LightRAG v1.5.4 (operate.py L770/838) lê entity_data.get("name"/"type"/"description") e rel_data.get("source"/"target"/"keywords"/"description"). Mismatch → name="" → "Empty entity name after sanitization" → "Completed merging: 0 entities" → vdb_entities 49B (vazio) eternamente. Renomeado para name/type/description e source/target/keywords/description. Verificado em storage limpo: "merging: 8 entities, 6 relations", vdb_entities 49B→67KB, query hybrid/local/naive/mix retorna contexto real. Pipeline end-to-end OK.
+
+LIÇÕES TRANSVERSAIS:
+- Ao integrar lib externa com schema custom, conferir os NOMES DE CAMPO exatos que o parser dela lê (não assumir entity_name; era name).
+- GPU pequena (12GB): não empilhar múltiplos modelos grandes; preferir modelos pequenos de prosa que coexistam.
+- Erro determinístico (NaN) nunca deve ser retentado com backoff.
+- Storage do LightRAG acumula docs PENDING/FAILED que travam purge-on-resume; limpar quando poluído.
+- granite3-dense:2b no gleaning-pass alucina entidades (Apple/iPhone); mitigado com instrução anti-alucinação no prompt, mas o passe extra ainda injeta ruído com modelos pequenos.
+
+Storage LightRAG foi limpo (backups .bak.* em claude-mem/data/lightrag/). Próximo Dream Cycle real popula ambos os grafos. MCP server recarrega o código novo ao reconectar.
+
+
+---
+
+## Uso correto das buscas Sinapse: query hibrida vs temporal claude-mem (2026-06-27)
+
+Em Hive-Mind, agentes devem usar sinapse_query como busca hibrida padrao para entender estado/historico/decisoes/codigo/vault. sinapse_temporal_search consulta a timeline textual do claude-mem global (~/.claude-mem) via termos curtos/exatos; resultados vazios com frases longas nao provam ausencia de memoria. Em caso de vazio, reduzir a consulta ou usar titulos retornados por sinapse_query.
+
+
+---
+
+## Descrições de tools Sinapse devem espelhar comportamento real e workflow claude-mem (2026-06-27)
+
+Ao documentar busca no Hive-Mind, diferenciar claramente: sinapse_query é busca híbrida canônica; sinapse_temporal_search encapsula só a camada search/index textual do claude-mem global (/api/search), não o fluxo completo nativo search -> timeline -> get_observations. Tool descriptions devem ser auditadas contra handlers reais em scripts/services/sinapse_mcp.py e contra a versão instalada do claude-mem antes de orientar agentes.
+
+
+---
+
+## Sinapse deve preservar workflow search timeline get_observations do claude-mem (2026-06-27)
+
+Ao encapsular claude-mem no sinapse-memory, expor apenas /api/search perde a etapa mais valiosa do backend: filtrar pelo índice, inspecionar janela cronológica e hidratar detalhes por IDs. O MCP Sinapse deve manter o fluxo search -> timeline -> get_observations via sinapse_temporal_search, sinapse_temporal_timeline e sinapse_temporal_get_observations, orientando agentes a nunca buscar detalhes antes de filtrar.
+
+
+---
+
+## Auditoria Sinapse deve comparar descricao MCP com integracao real (2026-06-27)
+
+Na auditoria das tools Sinapse, comparar apenas a lista de tools não basta. A descrição precisa ser confrontada com o backend real: sinapse_health deve separar read_backends (UMC, NeuralMemory, sqlite-vec, claude-mem, Graphify, Graphiti, filesystem) de components (RTK etc.); register-mcp registra apenas o orquestrador sinapse-memory; wrappers como Screenpipe precisam aceitar os mesmos parâmetros prometidos pela tool MCP, como monitor em sinapse_capture_screen.
+
+
+---
+
+## RTK no Hive-Mind e componente de execucao hook-based, nao memoria (2026-06-27)
+
+RTK (rtk-ai/rtk) funciona como proxy/filtro de comandos shell: `rtk rewrite` decide se um comando deve virar `rtk <cmd>` e os hooks/plugins aplicam essa mutacao antes da execução. No Hive-Mind, RTK deve ser descrito como componente de execução/tronco e aparecer em `components`, não em read_backends do sinapse_query. A integração Hermes usa `integrations/rtk/hooks/hermes/rtk-rewrite` e falha aberta se RTK não estiver no PATH.
+
+
+---
+
+## RTK no Hive-Mind e transversal por agente, nao backend de memoria (2026-06-27)
+
+RTK (rtk-ai/rtk) deve ser documentado e configurado como camada transversal de execucao shell por agente/CLI via rtk init/start-rtk.sh. Hermes e apenas um alvo. RTK nao deve aparecer em hybrid_search.backends nem ser tratado como backend do sinapse_query; pode aparecer como component/camada de execucao.
